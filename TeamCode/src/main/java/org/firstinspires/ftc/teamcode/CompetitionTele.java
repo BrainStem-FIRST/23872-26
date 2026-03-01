@@ -224,6 +224,13 @@ public class CompetitionTele extends LinearOpMode {
         } else if (gp1.isFirstDpadLeft()) {
             robot.ramp.setRampDown();
         }
+
+        if (gp2.isFirstDpadRight()) {
+            robot.ramp.setRampUp();
+        } else if (gp1.isFirstDpadLeft()) {
+            robot.ramp.setRampDown();
+        }
+
         if (gamepad1.a) {
             robot.shooter.setShooterShootClose();
             robot.pivot.setPivotShootClose();
@@ -240,6 +247,7 @@ public class CompetitionTele extends LinearOpMode {
         if (gp2.isFirstDpadLeft()) {
             robot.ramp.setRampDown();
         }
+
     }
 
     private void updateDriver2() {
