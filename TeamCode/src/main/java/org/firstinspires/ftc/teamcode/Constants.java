@@ -16,7 +16,7 @@ public class Constants {
 
             // Vel Targets (ticks per second)
             public  double AUTO_VEL = 300;
-            public  double FAR_SHOOT_VEL = 1910;
+            public  double FAR_SHOOT_VEL = 1920;
             public  double CLOSE_SHOOT_VEL = 1340;
 
             // Limits
@@ -56,9 +56,9 @@ public class Constants {
 
         public static class CollectorConstants {
             // Power Constants
-            public static double INTAKE_VELOCITY = -3100;
+            public static double INTAKE_VELOCITY = -3300;
             public static double EXTAKE_VELOCITY = 800;
-            public static double AUTO_VELOCITY = -2700; // ).77
+            public static double AUTO_VELOCITY = -3300; // ).77
             public static final double OFF_POWER = 0.0;
         }
 

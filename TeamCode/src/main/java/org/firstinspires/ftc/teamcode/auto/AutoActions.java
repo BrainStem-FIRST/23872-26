@@ -120,7 +120,7 @@ public class AutoActions {
         return new Action() {
             boolean first = true;
             double minTime = 0.7;
-            double maxTime = 1.2;
+            double maxTime = 1;
             final ElapsedTime timer = new ElapsedTime();
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {

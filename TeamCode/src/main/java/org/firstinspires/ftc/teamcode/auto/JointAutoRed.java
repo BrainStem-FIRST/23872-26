@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name="Joint Auto - Red", group = "RED")
+@Autonomous(name="Joint Auto - Red Close", group = "RED")
 @Config
 
 public class JointAutoRed extends LinearOpMode {
@@ -53,13 +53,13 @@ public class JointAutoRed extends LinearOpMode {
     public static double[] strafePos = new double[] { -17, 36, 90 };
 
     //2nd spike!!
-    public static double[] collect2Pre = new double[] { 9, 29, 90 };
+    public static double[] collect2Pre = new double[] { 12, 29, 90 };
 
 //    public static double[] collect4 = new double[] { 10, -40, -90 };
 //    public static double[] collect5 = new double[] { 10, -45, -90 };
 //    public static double[] collect6 = new double[] { 10, -50, -90 };
 
-    public static double[] secondSpikeEnd = new double[] { 11, 52, 90 };
+    public static double[] secondSpikeEnd = new double[] { 12, 52, 90 };
     public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
     private static class PARAMS{

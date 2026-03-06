@@ -185,7 +185,7 @@ public class CompetitionTele extends LinearOpMode {
             robot.spindexer.setTargetAdj(Constants.spindexerConstants.TICKS_120);
         }
 
-        if (gp1.isFirstRightBumper()) {
+        if (gp1.isFirstRightBumper() && !wasHit) {
             robot.ramp.setRampUp();
             pressedTime.reset();
             // TODO: Test if works
