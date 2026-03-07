@@ -1,11 +1,10 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.oldOnes;
 
 import static org.firstinspires.ftc.teamcode.utils.pidDrive.UtilFunctions.createPose;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -15,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.BrainSTEMRobot;
+import org.firstinspires.ftc.teamcode.auto.AutoActions;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.Limelight;
 import org.firstinspires.ftc.teamcode.utils.pidDrive.DrivePath;
 import org.firstinspires.ftc.teamcode.utils.pidDrive.Waypoint;
@@ -24,26 +24,25 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@Disabled
-@Autonomous(name="Nine Ball Pattern - Disabled")
+@Autonomous(name="No Pattern Nine Ball")
 @Config
-@Deprecated
-public class NineBallAuto extends LinearOpMode {
+@Disabled
+public class NoPatterNine extends LinearOpMode {
 
     public List<String> order1 = new ArrayList<>(Arrays.asList("P", "P", "G"));
 
     public List<String> targetOrder = order1; // default
 
-    public static double[] start = new double[] { -68, -48, 0};
+    public static double[] start = new double[] { -65, -41.75, 0};
 
     //Obelisk look
     public static double[] lookAtOb = new double[] {-22, -24, -214};
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-36, -36, -135};
-    public static double[] collect1Pre = new double[] { -12, -30, -90 };
-    public static double[] collect1Mid = new double[] { -12, -22, -90 };
+    public static double[] close1Shooting = new double[] {-26, -26, -135};
+    public static double[] collect1Pre = new double[] { -13, -30, -90 };
+    public static double[] collect1Mid = new double[] { -13, -22, -90 };
 //    public static double[] collect1 = new double[] { -12, -39, -90 };
 //    public static double[] collect2 = new double[] { -12, -44, -90 };
 //    public static double[] collect3 = new double[] { -2, -49, -90 };
@@ -52,27 +51,22 @@ public class NineBallAuto extends LinearOpMode {
     public static double[] strafePos = new double[] { -36, -17, -90 };
 
     //2nd spike!!
-    public static double[] collect2Pre = new double[] { 10, -28, -90 };
+    public static double[] collect2Pre = new double[] { 11, -28, -90 };
 
 //    public static double[] collect4 = new double[] { 10, -40, -90 };
 //    public static double[] collect5 = new double[] { 10, -45, -90 };
 //    public static double[] collect6 = new double[] { 10, -50, -90 };
 
-    public static double[] secondSpikeEnd = new double[] { 12, -52, -90 };
+    public static double[] secondSpikeEnd = new double[] { 11, -52, -90 };
     public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
 
     private static class PARAMS{
         private double COLLECT_DRIVE_MAX_POWER = 0.15;
     }
-    public static NineBallAuto.PARAMS PARAMS = new NineBallAuto.PARAMS();
+    public static NoPatterNine.PARAMS PARAMS = new NoPatterNine.PARAMS();
 
-    public SequentialAction ShootingSequence() {
-        return new SequentialAction(
-               AutoActions.shootAll(),
-                AutoActions.turnShooterOnIdle()
-        );
-    }
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -105,21 +99,22 @@ public class NineBallAuto extends LinearOpMode {
 //                new Waypoint(createPose(collect1)).setMaxLinearPower(0.1).setMaxTime(3)
 //        );
         DrivePath driveToCollectFirstSpikeEnd = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(collect1Mid)).setSlowDownPercent(0.5),
-                new Waypoint(createPose(collect1Pre)).setSlowDownPercent(0.3),
+                new Waypoint(createPose(collect1Pre)),
                 new Waypoint(createPose(firstSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
         );
 
         DrivePath driveOffLine = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(strafePos)).setMaxLinearPower(0.5)
+                new Waypoint(createPose(strafePos))
         );
+
+        robot.isAuto = true;
 
         //2nd Spike!! ===================================================================
 //        DrivePath driveToCollect2Pre = new DrivePath(robot.drive, telemetry,
 //                new Waypoint(createPose(collect2Pre)).setSlowDownPercent(0.1)
 //        );
         DrivePath driveToCollectSecondSpikeEnd = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(collect2Pre)).setSlowDownPercent(0.3),
+                new Waypoint(createPose(collect2Pre)),
                 new Waypoint(createPose(secondSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
         );
 
@@ -145,26 +140,20 @@ public class NineBallAuto extends LinearOpMode {
                         new SequentialAction(
 
                                 new ParallelAction(
-
                                         AutoActions.shooterTurnOnClose(),
-                                        driveToOb
+                                        AutoActions.pivotClose(),
+
+                                        driveToPreloadShoot
                                 ),
-
-                                AutoActions.waitForLimelightAuto(),
-
-
-                                new ParallelAction(
-                                        driveToPreloadShoot,
-                                        AutoActions.moveSpindexerMot(0)
-                                ),
-
 
                                 new SleepAction(1.5),
 
+//                                AutoActions.shootAll(),
+
                                 AutoActions.rampUp(),
 //                            new SleepAction(0.2),
-                                new SleepAction(0.2),
-                                AutoActions.moveSpindexer360(),
+                                  new SleepAction(0.2),
+                               AutoActions.moveSpindexer360(),
 //                             new SleepAction(0.5),
                                 new SleepAction(0.2),
 
@@ -181,20 +170,16 @@ public class NineBallAuto extends LinearOpMode {
                                 ),
 
 
-
-                                new SleepAction(0.2),
-
                                 new ParallelAction(
                                         AutoActions.setCollectorOff(),
+                                        AutoActions.pivotClose(),
                                         AutoActions.shooterTurnOnClose()
                                 ),
 
-                                new ParallelAction(
-                                        driveToShootOne,
-                                        AutoActions.moveSpindexerMot(1)
-                                ),
 
-                                new SleepAction(1.5),
+                                driveToShootOne,
+
+                                new SleepAction(0.5),
 
                                 AutoActions.rampUp(),
 //                            new SleepAction(0.2),
@@ -206,7 +191,6 @@ public class NineBallAuto extends LinearOpMode {
                                 AutoActions.rampDown(),
                                 new SleepAction(0.2),
                                 AutoActions.turnShooterOnIdle(),
-                                new SleepAction(0.3),
                                 new SleepAction(0.3),
 
                                 //2nd Spike ==========================
@@ -219,13 +203,15 @@ public class NineBallAuto extends LinearOpMode {
                                 new SleepAction(0.3),
 
                                new ParallelAction(
-                                       driveToShootTwo,
-                                       AutoActions.moveSpindexerMot(2)
+                                       AutoActions.setCollectorOff(),
+                                       AutoActions.shooterTurnOnClose()
+                                       , AutoActions.pivotClose()
+                                       , driveToShootTwo
                                ),
 
 
+                                new SleepAction(0.75),
 
-                                new SleepAction(1.5),
 
                                 AutoActions.rampUp(),
 //                            new SleepAction(0.2),
@@ -237,9 +223,11 @@ public class NineBallAuto extends LinearOpMode {
                                 AutoActions.rampDown(),
                                 new SleepAction(0.2),
                                 AutoActions.turnShooterOnIdle(),
-                                new SleepAction(0.3),
+                                new SleepAction(.2),
 
                                 driveOffLine
+
+
                         ),
                         AutoActions.robotUpdate(telemetry)
                 ));
@@ -264,7 +252,7 @@ public class NineBallAuto extends LinearOpMode {
             B2 = "P";
             B3 = "P";
         }
-        List<String> order1 = new ArrayList<>(Arrays.asList(B2, B1, B3)); // TODO: CHECK
+        List<String> order1 = new ArrayList<>(Arrays.asList(B3, B1, B2)); // TODO: CHECK
 
 
         List<String> order2 = new ArrayList<>(order1);
@@ -273,11 +261,11 @@ public class NineBallAuto extends LinearOpMode {
         List<String> order3 = new ArrayList<>(order2);
         Collections.rotate(order3, 1);
 
-        if (order1.equals(robot.limelight.targetOrder)) {
+        if (order1.equals(targetOrder)) {
             return 0;
-        } else if (order2.equals(robot.limelight.targetOrder)) {
+        } else if (order2.equals(targetOrder)) {
             return (double) 1024 /3;
-        } else if  (order3.equals(robot.limelight.targetOrder)){
+        } else if  (order3.equals(targetOrder)){
             return (double) (2 * 1024) /3;
         }
 
@@ -285,7 +273,6 @@ public class NineBallAuto extends LinearOpMode {
     }
 
     public boolean updateTargetMotif() {
-
         int tagId = Limelight.feducialResult;
 
         switch (tagId) {

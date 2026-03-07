@@ -22,55 +22,47 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name="Joint Auto - Blue Far", group = "BLUE")
+@Autonomous(name="0 Gate Close", group = "RED")
 @Config
+public class ZeroGRedClose extends LinearOpMode {
 
-public class JointAutoBlueFar extends LinearOpMode {
     public List<String> order1 = new ArrayList<>(Arrays.asList("P", "P", "G"));
 
     public List<String> targetOrder = order1; // default
 
-
-    public static double[] start = new double[] { 65, -24+6.25, 180};
+    public static double[] start = new double[] { -65, 41.75, 0};
 
     //Obelisk look
-//    public static double[] lookAtOb = new double[] {-23,-23, -195};
-    public static double[] lookAtOb = new double[] { 65, -24+6.25, 180};
-
-    //Open Gate
-
-    public static double[] openGatePos = new double[] {-7,-72+6+5.25, 135};
-
+    public static double[] lookAtOb = new double[] {-23, 23, 195};
 
 
     //1st Spike!!
-    public static double[] farShooting = new double[] {45, -18, -113.20};
-    public static double[] collect1Pre = new double[] { -13, -31, -90 };
-    public static double[] collect1Mid = new double[] { -13, -22, -90 };
+    public static double[] close1Shooting = new double[] {-31.5, 31.5, 135};
+    public static double[] collect1Pre = new double[] { -13, 30, 90 };
+    public static double[] collect1Mid = new double[] { -13, 22, 90 };
+
 //    public static double[] collect1 = new double[] { -12, -39, -90 };
 //    public static double[] collect2 = new double[] { -12, -44, -90 };
 //    public static double[] collect3 = new double[] { -2, -49, -90 };
 
-    public static double[] firstSpikeEnd = new double[] { -12, -52, -90 };
-    public static double[] strafePos = new double[] { -17, -36, -90 };
+    public static double[] firstSpikeEnd = new double[] { -12, 52, 90 };
+    public static double[] strafePos = new double[] { -17, 36, 90 };
 
     //2nd spike!!
-    public static double[] collect2Pre = new double[] { 12, -29, -90 };
-    public static double[] collect2Mid = new double[] { 10, -25, -90 };
+    public static double[] collect2Pre = new double[] { 9, 25, 90 };
 
-    public static double[] secondSpikeEnd = new double[] { 12, -52, -90 };
+//    public static double[] collect4 = new double[] { 10, -40, -90 };
+//    public static double[] collect5 = new double[] { 10, -45, -90 };
+//    public static double[] collect6 = new double[] { 10, -50, -90 };
 
-    public static double[] collect3Pre = new double[] { 9, -29, -90 };
-
-    public static double[] thirdSpikeEnd = new double[] { 36, -52, -90 };
-
-
-//    public static double collectMaxPower = 0.3;
+    public static double[] secondSpikeEnd = new double[] { 10, 52, 90 };
+    public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
-    private static class PARAMS{
-        private double COLLECT_DRIVE_MAX_POWER = 0.15;
+
+    public static class PARAMS{
+        public double COLLECT_DRIVE_MAX_POWER = 0.15;
     }
-    public static JointAutoBlueFar.PARAMS PARAMS = new JointAutoBlueFar.PARAMS();
+    public static ZeroGBlueClose.PARAMS PARAMS = new ZeroGBlueClose.PARAMS();
 
 
     @Override
@@ -81,30 +73,21 @@ public class JointAutoBlueFar extends LinearOpMode {
         robot = new BrainSTEMRobot(hardwareMap, telemetry, this, createPose(start));
         AutoActions.setRobot(robot);
 
-
-
         DrivePath driveToOb = new DrivePath(robot.drive, telemetry,
                 new Waypoint(createPose(lookAtOb)).setMaxLinearPower(1)
         );
 
-        DrivePath openGate = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(openGatePos)).setMaxLinearPower(1).setMaxTime(1.5)
-        );
-
-
         DrivePath driveToPreloadShoot = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(farShooting))
+                new Waypoint(createPose(close1Shooting))
         );
 
         DrivePath driveToShootOne = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(farShooting))
+                new Waypoint(createPose(close1Shooting))
         );
 
         DrivePath driveToShootTwo = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(farShooting))
+                new Waypoint(createPose(close1Shooting))
         );
-
-
 
         //1st Spike ===================================================================
 
@@ -131,11 +114,6 @@ public class JointAutoBlueFar extends LinearOpMode {
                 new Waypoint(createPose(secondSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
         );
 
-        DrivePath driveToCollectThirdSpike = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(collect3Pre)),
-                new Waypoint(createPose(thirdSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
-        );
-
 //
 //        DrivePath driveToCollectFourthSpike = new DrivePath(robot.drive, telemetry,
 //                new Waypoint(createPose(collect4)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER).setMaxTime(3)
@@ -155,102 +133,99 @@ public class JointAutoBlueFar extends LinearOpMode {
         Action autoAction = new ParallelAction(
                 new SequentialAction(
                         new ParallelAction(
-                                AutoActions.shooterTurnOnFar(),
-                                AutoActions.pivotFar(),
-                                driveToPreloadShoot
-                        ),
-
-                        // doesnt finish this
-
-                        new SleepAction(0.3),
-
-                        AutoActions.rampUp(),
-//                            new SleepAction(0.2),
-                        new SleepAction(0.2),
-
-
-                        AutoActions.moveSpindexer360(),
-                        AutoActions.rampDown(),
-                        AutoActions.turnShooterOnIdle(),
-
-
-                        // skips to this:
-
-
-                        // GATE
-
-                        new ParallelAction(
-                                AutoActions.setCollectorOn(),
-                                driveToCollectSecondSpikeEnd
+                                AutoActions.shooterTurnOnClose()
+                                , driveToOb
                         ),
 
                         new SleepAction(0.2),
-
-                        new ParallelAction(
-                                openGate,
-                                AutoActions.pivotFar(),
-                                AutoActions.shooterTurnOnFar()
-                        ),
-
 
                         AutoActions.waitForLimelightAuto(),
 
+                        new SleepAction(0.2),
 
                         new ParallelAction(
-                                driveToShootOne,
-                                AutoActions.moveSpindexerMot(2, telemetry)
+                                driveToPreloadShoot,
+                                AutoActions.moveSpindexerMot(0, telemetry)
                         ),
 
-                        AutoActions.setCollectorOff(),
-
-
-                        new SleepAction(0.2),
+                        new SleepAction(0.7),
 
                         AutoActions.rampUp(),
 //                            new SleepAction(0.2),
                         new SleepAction(0.5),
                         AutoActions.moveSpindexer360(),
+                        new SleepAction(0.7),
+
 
                         AutoActions.rampDown(),
+                        new SleepAction(0.2),
+                        AutoActions.turnShooterOnIdle(),
+
+
+                        //1st Spike Does Work ==========================
+                        new ParallelAction(
+                                AutoActions.setCollectorOn(),
+                                driveToCollectFirstSpikeEnd
+                        ),
+
+
+                        new ParallelAction(
+                                AutoActions.setCollectorOff(),
+                                AutoActions.pivotClose(),
+                                AutoActions.shooterTurnOnClose()
+                        ),
+
+
+                        driveToShootOne,
+
+                        AutoActions.moveSpindexerMot(1, telemetry),
+
+                        new SleepAction(0.2),
+
+                        AutoActions.rampUp(),
+//                            new SleepAction(0.2),
+                        new SleepAction(0.2),
+                        AutoActions.moveSpindexer360(),
+
+                        AutoActions.rampDown(),
+                        new SleepAction(0.2),
                         AutoActions.turnShooterOnIdle(),
 
                         //2nd Spike ==========================
 
                         new ParallelAction(
                                 AutoActions.setCollectorOn(),
-                                driveToCollectThirdSpike
+                                driveToCollectSecondSpikeEnd
                         ),
 
                         new SleepAction(0.3),
 
                         new ParallelAction(
-                                AutoActions.shooterTurnOnFar()
-                                , AutoActions.pivotFar()
-                                , driveToShootTwo,
-
-                                AutoActions.moveSpindexerMot(3, telemetry)
+                                AutoActions.setCollectorOff(),
+                                AutoActions.shooterTurnOnClose()
+                                , AutoActions.pivotClose()
+                                , driveToShootTwo
                         ),
 
 
-                        AutoActions.setCollectorOff(),
+                        AutoActions.moveSpindexerMot(2, telemetry),
 
-
-                        new SleepAction(0.3),
+                        new SleepAction(0.2),
 
                         AutoActions.rampUp(),
 //                            new SleepAction(0.2),
-                        new SleepAction(0.6),
+                        new SleepAction(0.2),
                         AutoActions.moveSpindexer360(),
+
                         AutoActions.rampDown(),
+                        new SleepAction(0.2),
                         AutoActions.turnShooterOnIdle(),
 
                         driveOffLine
 
 
-
-
                 ),
-                    AutoActions.robotUpdate(telemetry)
+                AutoActions.robotUpdate(telemetry)
         );
 
         Actions.runBlocking(autoAction);

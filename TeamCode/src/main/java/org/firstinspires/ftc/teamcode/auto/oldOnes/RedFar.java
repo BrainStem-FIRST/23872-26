@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.oldOnes;
 
 import static org.firstinspires.ftc.teamcode.utils.pidDrive.UtilFunctions.createPose;
 
@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.BrainSTEMRobot;
+import org.firstinspires.ftc.teamcode.auto.AutoActions;
 import org.firstinspires.ftc.teamcode.utils.pidDrive.DrivePath;
 import org.firstinspires.ftc.teamcode.utils.pidDrive.Waypoint;
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.auto.oldOnes;
 
 import static org.firstinspires.ftc.teamcode.utils.pidDrive.UtilFunctions.createPose;
 
@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.BrainSTEMRobot;
+import org.firstinspires.ftc.teamcode.auto.AutoActions;
 import org.firstinspires.ftc.teamcode.subsystems.sensors.Limelight;
 import org.firstinspires.ftc.teamcode.utils.pidDrive.DrivePath;
 import org.firstinspires.ftc.teamcode.utils.pidDrive.Waypoint;
@@ -23,23 +24,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@Autonomous(name="No Pattern Nine Ball - Hi Kevin")
-@Config
 @Disabled
-public class HiKevin extends LinearOpMode {
+@Autonomous(name="Nine Ball Pattern - Disabled")
+@Config
+@Deprecated
+public class NineBallAuto extends LinearOpMode {
 
     public List<String> order1 = new ArrayList<>(Arrays.asList("P", "P", "G"));
 
     public List<String> targetOrder = order1; // default
 
-    public static double[] start = new double[] { -65, -41.75, 0};
+    public static double[] start = new double[] { -68, -48, 0};
 
     //Obelisk look
     public static double[] lookAtOb = new double[] {-22, -24, -214};
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-24, -24, -135};
+    public static double[] close1Shooting = new double[] {-36, -36, -135};
     public static double[] collect1Pre = new double[] { -12, -30, -90 };
     public static double[] collect1Mid = new double[] { -12, -22, -90 };
 //    public static double[] collect1 = new double[] { -12, -39, -90 };
@@ -50,7 +52,7 @@ public class HiKevin extends LinearOpMode {
     public static double[] strafePos = new double[] { -36, -17, -90 };
 
     //2nd spike!!
-    public static double[] collect2Pre = new double[] { 12, -28, -90 };
+    public static double[] collect2Pre = new double[] { 10, -28, -90 };
 
 //    public static double[] collect4 = new double[] { 10, -40, -90 };
 //    public static double[] collect5 = new double[] { 10, -45, -90 };
@@ -63,9 +65,14 @@ public class HiKevin extends LinearOpMode {
     private static class PARAMS{
         private double COLLECT_DRIVE_MAX_POWER = 0.15;
     }
-    public static HiKevin.PARAMS PARAMS = new HiKevin.PARAMS();
+    public static NineBallAuto.PARAMS PARAMS = new NineBallAuto.PARAMS();
 
-
+    public SequentialAction ShootingSequence() {
+        return new SequentialAction(
+               AutoActions.shootAll(),
+                AutoActions.turnShooterOnIdle()
+        );
+    }
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -98,12 +105,13 @@ public class HiKevin extends LinearOpMode {
 //                new Waypoint(createPose(collect1)).setMaxLinearPower(0.1).setMaxTime(3)
 //        );
         DrivePath driveToCollectFirstSpikeEnd = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(collect1Pre)),
+                new Waypoint(createPose(collect1Mid)).setSlowDownPercent(0.5),
+                new Waypoint(createPose(collect1Pre)).setSlowDownPercent(0.3),
                 new Waypoint(createPose(firstSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
         );
 
         DrivePath driveOffLine = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(strafePos))
+                new Waypoint(createPose(strafePos)).setMaxLinearPower(0.5)
         );
 
         //2nd Spike!! ===================================================================
@@ -111,7 +119,7 @@ public class HiKevin extends LinearOpMode {
 //                new Waypoint(createPose(collect2Pre)).setSlowDownPercent(0.1)
 //        );
         DrivePath driveToCollectSecondSpikeEnd = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(collect2Pre)),
+                new Waypoint(createPose(collect2Pre)).setSlowDownPercent(0.3),
                 new Waypoint(createPose(secondSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
         );
 
@@ -135,92 +143,103 @@ public class HiKevin extends LinearOpMode {
         Actions.runBlocking(
                 new ParallelAction(
                         new SequentialAction(
-//
-//                                new ParallelAction(
-//                                        AutoActions.shooterTurnOnClose(),
-//                                        AutoActions.pivotClose(),
-//
-//                                        driveToPreloadShoot
-//                                ),
-//
-//
-//
-////                                AutoActions.shootAll(),
-//
-//                                AutoActions.rampUp(),
-////                            new SleepAction(0.2),
-//                                  new SleepAction(0.2),
-//                               AutoActions.moveSpindexer360(),
-////                             new SleepAction(0.5),
-//                                new SleepAction(0.4),
-//
-//                                AutoActions.rampDown(),
-//                                AutoActions.turnShooterOnIdle(),
-//                                new SleepAction(0.5),
-//
-//
-//                                //1st Spike Does Work ==========================
-//                                new ParallelAction(
-//                                        AutoActions.setCollectorOn(),
-//                                        driveToCollectFirstSpikeEnd
-//                                ),
-//
-//
-//
-//                                new SleepAction(0.2),
-//
-//                                new ParallelAction(
-//                                        AutoActions.setCollectorOff(),
-//                                        AutoActions.pivotClose(),
-//                                        AutoActions.shooterTurnOnClose()
-//                                ),
-//
-//                                new ParallelAction(
-//                                        driveToPreloadShoot
-//                                ),
-//
-//                                AutoActions.rampUp(),
-////                            new SleepAction(0.2),
-//                                new SleepAction(0.2),
-//                                AutoActions.moveSpindexer360(),
-////                             new SleepAction(0.5),
-//                                new SleepAction(0.5),
-//
-//                                AutoActions.rampDown(),
-//                                AutoActions.turnShooterOnIdle(),
-//                                new SleepAction(0.4),
-//
-//                                //2nd Spike ==========================
+
+                                new ParallelAction(
+
+                                        AutoActions.shooterTurnOnClose(),
+                                        driveToOb
+                                ),
+
+                                AutoActions.waitForLimelightAuto(),
+
+
+                                new ParallelAction(
+                                        driveToPreloadShoot,
+                                        AutoActions.moveSpindexerMot(0)
+                                ),
+
+
+                                new SleepAction(1.5),
+
+                                AutoActions.rampUp(),
+//                            new SleepAction(0.2),
+                                new SleepAction(0.2),
+                                AutoActions.moveSpindexer360(),
+//                             new SleepAction(0.5),
+                                new SleepAction(0.2),
+
+                                AutoActions.rampDown(),
+                                new SleepAction(0.2),
+                                AutoActions.turnShooterOnIdle(),
+                                new SleepAction(0.3),
+
+
+                                //1st Spike Does Work ==========================
+                                new ParallelAction(
+                                        AutoActions.setCollectorOn(),
+                                        driveToCollectFirstSpikeEnd
+                                ),
+
+
+
+                                new SleepAction(0.2),
+
+                                new ParallelAction(
+                                        AutoActions.setCollectorOff(),
+                                        AutoActions.shooterTurnOnClose()
+                                ),
+
+                                new ParallelAction(
+                                        driveToShootOne,
+                                        AutoActions.moveSpindexerMot(1)
+                                ),
+
+                                new SleepAction(1.5),
+
+                                AutoActions.rampUp(),
+//                            new SleepAction(0.2),
+                                new SleepAction(0.2),
+                                AutoActions.moveSpindexer360(),
+//                             new SleepAction(0.5),
+                                new SleepAction(0.2),
+
+                                AutoActions.rampDown(),
+                                new SleepAction(0.2),
+                                AutoActions.turnShooterOnIdle(),
+                                new SleepAction(0.3),
+                                new SleepAction(0.3),
+
+                                //2nd Spike ==========================
 
                                 new ParallelAction(
                                         AutoActions.setCollectorOn(),
                                         driveToCollectSecondSpikeEnd
                                 ),
-                                driveToPreloadShoot
 
-//                                new SleepAction(0.3),
-//
-//                               new ParallelAction(
-//                                       AutoActions.shooterTurnOnClose(),
-//                                       AutoActions.pivotClose(),
-//                                       driveToPreloadShoot
-//                               ),
-//
-//
-//                                AutoActions.rampUp(),
-////                            new SleepAction(0.2),
-//                                new SleepAction(0.2),
-//                                AutoActions.moveSpindexer360(),
-////                             new SleepAction(0.5),
-//                                new SleepAction(0.4),
-//
-//                                AutoActions.rampDown(),
-//                                AutoActions.turnShooterOnIdle(),
-//                                new SleepAction(.4),
-//
-//                                driveOffLine
+                                new SleepAction(0.3),
+
+                               new ParallelAction(
+                                       driveToShootTwo,
+                                       AutoActions.moveSpindexerMot(2)
+                               ),
 
 
+
+                                new SleepAction(1.5),
+
+                                AutoActions.rampUp(),
+//                            new SleepAction(0.2),
+                                new SleepAction(0.2),
+                                AutoActions.moveSpindexer360(),
+//                             new SleepAction(0.5),
+                                new SleepAction(0.2),
+
+                                AutoActions.rampDown(),
+                                new SleepAction(0.2),
+                                AutoActions.turnShooterOnIdle(),
+                                new SleepAction(0.3),
+
+                                driveOffLine
                         ),
                         AutoActions.robotUpdate(telemetry)
                 ));
@@ -245,7 +264,7 @@ public class HiKevin extends LinearOpMode {
             B2 = "P";
             B3 = "P";
         }
-        List<String> order1 = new ArrayList<>(Arrays.asList(B3, B1, B2)); // TODO: CHECK
+        List<String> order1 = new ArrayList<>(Arrays.asList(B2, B1, B3)); // TODO: CHECK
 
 
         List<String> order2 = new ArrayList<>(order1);
@@ -254,11 +273,11 @@ public class HiKevin extends LinearOpMode {
         List<String> order3 = new ArrayList<>(order2);
         Collections.rotate(order3, 1);
 
-        if (order1.equals(targetOrder)) {
+        if (order1.equals(robot.limelight.targetOrder)) {
             return 0;
-        } else if (order2.equals(targetOrder)) {
+        } else if (order2.equals(robot.limelight.targetOrder)) {
             return (double) 1024 /3;
-        } else if  (order3.equals(targetOrder)){
+        } else if  (order3.equals(robot.limelight.targetOrder)){
             return (double) (2 * 1024) /3;
         }
 
@@ -266,6 +285,7 @@ public class HiKevin extends LinearOpMode {
     }
 
     public boolean updateTargetMotif() {
+
         int tagId = Limelight.feducialResult;
 
         switch (tagId) {

@@ -22,27 +22,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name="Joint Auto - Blue Close", group = "BLUE")
+@Autonomous(name="Blue Far", group = "BLUE")
 @Config
 
-public class JointAutoBlue extends LinearOpMode {
+// UNTESTED
+
+public class BlueFar extends LinearOpMode {
     public List<String> order1 = new ArrayList<>(Arrays.asList("P", "P", "G"));
 
     public List<String> targetOrder = order1; // default
 
 
-    public static double[] start = new double[] { -65, -41.75, 0};
+    public static double[] start = new double[] { 65, -24+6.25, 180};
 
     //Obelisk look
-    public static double[] lookAtOb = new double[] {-23,-23, -195};
+//    public static double[] lookAtOb = new double[] {-23,-23, -195};
+    public static double[] lookAtOb = new double[] { 65, -24+6.25, 180};
 
     //Open Gate
+
     public static double[] openGatePos = new double[] {-7,-72+6+5.25, 135};
 
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-39, -39, -137};
+    public static double[] farShooting = new double[] {45, -18, -113.20};
     public static double[] collect1Pre = new double[] { -13, -31, -90 };
     public static double[] collect1Mid = new double[] { -13, -22, -90 };
 //    public static double[] collect1 = new double[] { -12, -39, -90 };
@@ -53,21 +57,22 @@ public class JointAutoBlue extends LinearOpMode {
     public static double[] strafePos = new double[] { -17, -36, -90 };
 
     //2nd spike!!
-
-    public static double[] collect2Mid = new double[] { 12, -22, -90 };
-    public static double[] collect2Pre = new double[] { 12, -31, -90 };
-
-//    public static double[] collect4 = new double[] { 10, -40, -90 };
-//    public static double[] collect5 = new double[] { 10, -45, -90 };
-//    public static double[] collect6 = new double[] { 10, -50, -90 };
+    public static double[] collect2Pre = new double[] { 12, -29, -90 };
+    public static double[] collect2Mid = new double[] { 10, -25, -90 };
 
     public static double[] secondSpikeEnd = new double[] { 12, -52, -90 };
-    public static double collectMaxPower = 0.3;
+
+    public static double[] collect3Pre = new double[] { 9, -29, -90 };
+
+    public static double[] thirdSpikeEnd = new double[] { 36, -52, -90 };
+
+
+//    public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
     private static class PARAMS{
         private double COLLECT_DRIVE_MAX_POWER = 0.15;
     }
-    public static JointAutoBlue.PARAMS PARAMS = new JointAutoBlue.PARAMS();
+    public static BlueFar.PARAMS PARAMS = new BlueFar.PARAMS();
 
 
     @Override
@@ -85,20 +90,20 @@ public class JointAutoBlue extends LinearOpMode {
         );
 
         DrivePath openGate = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(openGatePos)).setMaxLinearPower(0.5).setMaxTime(1.5)
+                new Waypoint(createPose(openGatePos)).setMaxLinearPower(1).setMaxTime(1.5)
         );
 
 
         DrivePath driveToPreloadShoot = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(close1Shooting))
+                new Waypoint(createPose(farShooting))
         );
 
         DrivePath driveToShootOne = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(close1Shooting))
+                new Waypoint(createPose(farShooting))
         );
 
         DrivePath driveToShootTwo = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(close1Shooting))
+                new Waypoint(createPose(farShooting))
         );
 
 
@@ -124,9 +129,13 @@ public class JointAutoBlue extends LinearOpMode {
 //                new Waypoint(createPose(collect2Pre)).setSlowDownPercent(0.1)
 //        );
         DrivePath driveToCollectSecondSpikeEnd = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(collect2Mid)),
-                new Waypoint(createPose(collect2Pre)).setSlowDownPercent(0.8),
+                new Waypoint(createPose(collect2Pre)),
                 new Waypoint(createPose(secondSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
+        );
+
+        DrivePath driveToCollectThirdSpike = new DrivePath(robot.drive, telemetry,
+                new Waypoint(createPose(collect3Pre)),
+                new Waypoint(createPose(thirdSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
         );
 
 //
@@ -148,13 +157,14 @@ public class JointAutoBlue extends LinearOpMode {
         Action autoAction = new ParallelAction(
                 new SequentialAction(
                         new ParallelAction(
-                                AutoActions.shooterTurnOnClose(),
+                                AutoActions.shooterTurnOnFar(),
+                                AutoActions.pivotFar(),
                                 driveToPreloadShoot
                         ),
 
                         // doesnt finish this
 
-//                        new SleepAction(0.3),
+                        new SleepAction(0.3),
 
                         AutoActions.rampUp(),
 //                            new SleepAction(0.2),
@@ -173,15 +183,15 @@ public class JointAutoBlue extends LinearOpMode {
 
                         new ParallelAction(
                                 AutoActions.setCollectorOn(),
-                                driveToCollectFirstSpikeEnd
+                                driveToCollectSecondSpikeEnd
                         ),
 
-//                        new SleepAction(0.2),
+                        new SleepAction(0.2),
 
                         new ParallelAction(
                                 openGate,
-                                AutoActions.pivotClose(),
-                                AutoActions.shooterTurnOnClose()
+                                AutoActions.pivotFar(),
+                                AutoActions.shooterTurnOnFar()
                         ),
 
 
@@ -190,17 +200,17 @@ public class JointAutoBlue extends LinearOpMode {
 
                         new ParallelAction(
                                 driveToShootOne,
-                                AutoActions.moveSpindexerMot(0, telemetry)
+                                AutoActions.moveSpindexerMot(2, telemetry)
                         ),
 
                         AutoActions.setCollectorOff(),
 
 
-//                        new SleepAction(0.2),
+                        new SleepAction(0.2),
 
                         AutoActions.rampUp(),
 //                            new SleepAction(0.2),
-                        new SleepAction(0.25),
+                        new SleepAction(0.5),
                         AutoActions.moveSpindexer360(),
 
                         AutoActions.rampDown(),
@@ -210,28 +220,28 @@ public class JointAutoBlue extends LinearOpMode {
 
                         new ParallelAction(
                                 AutoActions.setCollectorOn(),
-                                driveToCollectSecondSpikeEnd
+                                driveToCollectThirdSpike
                         ),
 
-//                        new SleepAction(0.3),
+                        new SleepAction(0.3),
 
                         new ParallelAction(
-                                AutoActions.shooterTurnOnClose()
-                                , AutoActions.pivotClose()
+                                AutoActions.shooterTurnOnFar()
+                                , AutoActions.pivotFar()
                                 , driveToShootTwo,
 
-                                AutoActions.moveSpindexerMot(2, telemetry)
+                                AutoActions.moveSpindexerMot(3, telemetry)
                         ),
 
 
                         AutoActions.setCollectorOff(),
 
 
-//                        new SleepAction(0.3),
+                        new SleepAction(0.3),
 
                         AutoActions.rampUp(),
 //                            new SleepAction(0.2),
-                        new SleepAction(0.25),
+                        new SleepAction(0.6),
                         AutoActions.moveSpindexer360(),
                         AutoActions.rampDown(),
                         AutoActions.turnShooterOnIdle(),
