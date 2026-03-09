@@ -37,33 +37,37 @@ public class OneGRedClose extends LinearOpMode {
     public static double[] lookAtOb = new double[] {-22,22, 195};
 
     //Open Gate
-    public static double[] openGatePos = new double[] {-7,60, -115};
+    public static double[] openGatePos = new double[] {-7,72-6-5.25, -180};
+    public static double[] limelight = new double[] {-24, 24, -135};
 
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-41, 41, 135};
+    public static double[] close1Shooting = new double[] {-38.5, 38.5, 135};
     public static double[] collect1Pre = new double[] { -13, 29, 90 };
     public static double[] collect1Mid = new double[] { -13, 22, 90 };
 //    public static double[] collect1 = new double[] { -12, -39, -90 };
 //    public static double[] collect2 = new double[] { -12, -44, -90 };
 //    public static double[] collect3 = new double[] { -2, -49, -90 };
 
-    public static double[] firstSpikeEnd = new double[] { -12, 58, 90 };
+    public static double[] collect2Mid = new double[] { 12, 30, 90 };
+
+    public static double[] firstSpikeEnd = new double[] { -12, 54, 90 };
     public static double[] strafePos = new double[] { -17, 36, 90 };
 
     //2nd spike!!
-    public static double[] collect2Pre = new double[] { 12, 29, 90 };
+    public static double[] collect2Pre = new double[] { 12, 24, 90 };
+
 
 //    public static double[] collect4 = new double[] { 10, -40, -90 };
 //    public static double[] collect5 = new double[] { 10, -45, -90 };
 //    public static double[] collect6 = new double[] { 10, -50, -90 };
 
-    public static double[] secondSpikeEnd = new double[] { 12, 64, 90 };
+    public static double[] secondSpikeEnd = new double[] { 12, 55, 90 };
     public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
     private static class PARAMS{
-        private double COLLECT_DRIVE_MAX_POWER = 0.25;
+        private double COLLECT_DRIVE_MAX_POWER = 0.15;
     }
     public static OneGRedClose.PARAMS PARAMS = new OneGRedClose.PARAMS();
 
@@ -78,12 +82,11 @@ public class OneGRedClose extends LinearOpMode {
 
 
 
-        DrivePath driveToOb = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(lookAtOb)).setMaxLinearPower(1)
-        );
 
         DrivePath openGate = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(openGatePos)).setMaxLinearPower(1).setMaxTime(1)
+
+                new Waypoint(createPose(openGatePos)).setMaxLinearPower(1).setMaxTime(1),
+                new Waypoint(createPose(limelight))
         );
 
 
@@ -96,6 +99,7 @@ public class OneGRedClose extends LinearOpMode {
         );
 
         DrivePath driveToShootTwo = new DrivePath(robot.drive, telemetry,
+                new Waypoint(createPose(collect2Mid)),
                 new Waypoint(createPose(close1Shooting))
         );
 

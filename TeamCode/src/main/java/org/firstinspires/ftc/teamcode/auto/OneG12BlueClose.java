@@ -42,7 +42,7 @@ public class OneG12BlueClose extends LinearOpMode {
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-41, -41, -137};
+    public static double[] close1Shooting = new double[] {-39, -39, -137};
     public static double[] collect1Pre = new double[] { -12, -31, -90 };
     public static double[] collect1Mid = new double[] { -12, -22, -90 };
 
@@ -55,6 +55,7 @@ public class OneG12BlueClose extends LinearOpMode {
     public static double[] collect2Pre = new double[] { 12, -31, -90 };
 
     public static double[] collect3Pre = new double[] { 36, -31, -90 };
+    public static double[] collect3PrePass = new double[] { 12, -45, -90 };
 
 
     public static double[] thirdSpikeENd = new double[] { 36, -64, -90 };
@@ -64,7 +65,7 @@ public class OneG12BlueClose extends LinearOpMode {
     public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
     private static class PARAMS{
-        private double COLLECT_DRIVE_MAX_POWER = 0.25;
+        private double COLLECT_DRIVE_MAX_POWER = 0.2;
     }
     public static OneG12BlueClose.PARAMS PARAMS = new OneG12BlueClose.PARAMS();
 
@@ -97,10 +98,12 @@ public class OneG12BlueClose extends LinearOpMode {
         );
 
         DrivePath driveToShootTwo = new DrivePath(robot.drive, telemetry,
+                new Waypoint(createPose(collect3PrePass)),
                 new Waypoint(createPose(close1Shooting))
         );
 
         DrivePath driveToShoot3 = new DrivePath(robot.drive, telemetry,
+                new Waypoint(createPose(collect3PrePass)),
                 new Waypoint(createPose(close1Shooting))
         );
 

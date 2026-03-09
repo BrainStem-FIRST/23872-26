@@ -41,12 +41,14 @@ public class ZeroGBlueClose extends LinearOpMode {
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-41, -41, -137};
+    public static double[] close1Shooting = new double[] {-39, -39, -137};
     public static double[] collect1Pre = new double[] { -12, -31, -90 };
     public static double[] collect1Mid = new double[] { -12, -22, -90 };
 
     public static double[] firstSpikeEnd = new double[] { -12, -58, -90 };
     public static double[] strafePos = new double[] { -17, -36, -90 };
+
+    public static double[] collect3PrePass = new double[] { 12, -45, -90 };
 
     //2nd spike!!
 
@@ -59,7 +61,7 @@ public class ZeroGBlueClose extends LinearOpMode {
     BrainSTEMRobot robot;
 
     public static class PARAMS{
-        public double COLLECT_DRIVE_MAX_POWER = 0.25;
+        public double COLLECT_DRIVE_MAX_POWER = 0.15;
     }
     public static ZeroGBlueClose.PARAMS PARAMS = new ZeroGBlueClose.PARAMS();
 
@@ -85,6 +87,7 @@ public class ZeroGBlueClose extends LinearOpMode {
         );
 
         DrivePath driveToShootTwo = new DrivePath(robot.drive, telemetry,
+                new Waypoint(createPose(collect3PrePass)),
                 new Waypoint(createPose(close1Shooting))
         );
 

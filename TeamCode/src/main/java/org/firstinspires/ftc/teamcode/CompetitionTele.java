@@ -50,12 +50,14 @@ public class CompetitionTele extends LinearOpMode {
     private boolean collectorOn = false;
 
     boolean wasHit = false;
+    boolean isHitting;
 
     boolean thisJammed;
     ElapsedTime thisJamTime;
 
 
     ElapsedTime pressedTime;
+    ElapsedTime hittingTime;
 
 
 
@@ -76,6 +78,7 @@ public class CompetitionTele extends LinearOpMode {
 
         pressedTime = new ElapsedTime();
         thisJamTime = new ElapsedTime();
+        hittingTime = new ElapsedTime();
 
 
         robot.shooter.setShooterOff();
@@ -206,10 +209,18 @@ public class CompetitionTele extends LinearOpMode {
             wasHit = true;
         }
 
-        if ((wasHit && pressedTime.milliseconds() > 2500 && robot.shooter.isShootFar()) || (wasHit && pressedTime.milliseconds() > 1250 && robot.shooter.isShootClose())) {
+        if ((wasHit && pressedTime.milliseconds() > 2500 && robot.shooter.isShootFar()) || (wasHit && pressedTime.milliseconds() > 2000 && robot.shooter.isShootClose())) {
             robot.ramp.setRampDown();
-            robot.shooter.setShooterOff();
             wasHit = false;
+            isHitting = true;
+        } else {
+            isHitting = false;
+            hittingTime.reset();
+        }
+
+        if (isHitting && hittingTime.milliseconds() > 500) {
+            robot.shooter.setShooterOff();
+            isHitting = false;
         }
 
         // Switch goal - make so only presses in first 10 sec

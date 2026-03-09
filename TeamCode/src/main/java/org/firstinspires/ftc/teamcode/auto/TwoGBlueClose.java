@@ -46,7 +46,7 @@ public class TwoGBlueClose extends LinearOpMode {
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-41, -41, -137};
+    public static double[] close1Shooting = new double[] {-39, -39, -137};
     public static double[] collect1Pre = new double[] { -12, -31, -90 };
     public static double[] collect1Mid = new double[] { -12, -22, -90 };
 
@@ -65,7 +65,7 @@ public class TwoGBlueClose extends LinearOpMode {
     public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
     private static class PARAMS{
-        private double COLLECT_DRIVE_MAX_POWER = 0.25;
+        private double COLLECT_DRIVE_MAX_POWER = 0.15;
     }
     public static TwoGBlueClose.PARAMS PARAMS = new TwoGBlueClose.PARAMS();
 

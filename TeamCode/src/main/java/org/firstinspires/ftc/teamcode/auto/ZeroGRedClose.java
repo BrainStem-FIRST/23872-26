@@ -37,7 +37,7 @@ public class ZeroGRedClose extends LinearOpMode {
     public static double[] lookAtOb = new double[] {-22,22, 195};
 
     //Open Gate
-    public static double[] openGatePos = new double[] {-7,60, -115};
+    public static double[] openGatePos = new double[] {-7,72-6-5.25, -135};
 
 
 
@@ -64,7 +64,7 @@ public class ZeroGRedClose extends LinearOpMode {
     BrainSTEMRobot robot;
 
     public static class PARAMS{
-        public double COLLECT_DRIVE_MAX_POWER = 0.25;
+        public double COLLECT_DRIVE_MAX_POWER = 0.15;
     }
     public static ZeroGBlueClose.PARAMS PARAMS = new ZeroGBlueClose.PARAMS();
 

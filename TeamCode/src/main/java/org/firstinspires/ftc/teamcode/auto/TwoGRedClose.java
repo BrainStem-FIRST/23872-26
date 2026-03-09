@@ -34,38 +34,37 @@ public class TwoGRedClose extends LinearOpMode {
     public static double[] start = new double[] { -65, 41.75, 0};
 
     //Obelisk look
-    public static double[] lookAtOb = new double[] {-23,23, 195};
 
     //Open Gate
-    public static double[] openGatePos = new double[] {-7,72+6+5.25, -135};
-    public static double[] openGatePos1 = new double[] {-7,72+6+5.25, -180};
+    public static double[] openGatePos = new double[] {-7,72-6-5.25, -140};
+    public static double[] limelight = new double[] {-24, 24, -135};
+    public static double[] openGatePos1 = new double[] {-7,72-6-5.25, -180};
 
     public static double[] passPos = new double[] { 0, 35, 90 };
-    public static double[] openGatePos2 = new double[] {-7,72+6+5.25, -180};
 
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-41, 41, 137};
+    public static double[] close1Shooting = new double[] {-39, 39, 137};
     public static double[] collect1Pre = new double[] { -12, 31, 90 };
     public static double[] collect1Mid = new double[] { -12, 22, 90 };
 
-    public static double[] firstSpikeEnd = new double[] { -12, 58, 90 };
-    public static double[] strafePos = new double[] { -17,-36, 90 };
+    public static double[] firstSpikeEnd = new double[] { -12, 56, 90 };
+    public static double[] strafePos = new double[] { -17,36, 90 };
 
 
 
     //2nd spike!!
 
     public static double[] collect2Mid = new double[] { 12, 25, 90 };
-    public static double[] collect2Pre = new double[] { 12, 31, 90 };
+    public static double[] collect2Pre = new double[] { 12, 24, 90 };
 
 
-    public static double[] secondSpikeEnd = new double[] { 12, 64, 90 };
+    public static double[] secondSpikeEnd = new double[] { 12, 54, 90 };
     public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
     private static class PARAMS{
-        private double COLLECT_DRIVE_MAX_POWER = 0.25;
+        private double COLLECT_DRIVE_MAX_POWER = 0.15;
     }
     public static TwoGRedClose.PARAMS PARAMS = new TwoGRedClose.PARAMS();
 
@@ -80,12 +79,10 @@ public class TwoGRedClose extends LinearOpMode {
 
 
 
-        DrivePath driveToOb = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(lookAtOb)).setMaxLinearPower(1)
-        );
-
         DrivePath openGate = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(openGatePos)).setMaxLinearPower(0.75).setMaxTime(1.5)
+
+                new Waypoint(createPose(openGatePos)).setMaxLinearPower(1).setMaxTime(1),
+                new Waypoint(createPose(limelight))
         );
 
         DrivePath openGate1 = new DrivePath(robot.drive, telemetry,
@@ -130,9 +127,8 @@ public class TwoGRedClose extends LinearOpMode {
 
         //2nd Spike!! ===================================================================
         DrivePath driveToCollectSecondSpikeEnd = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(collect2Mid)),
                 new Waypoint(createPose(collect2Pre)),
-                new Waypoint(createPose(secondSpikeEnd)).setMaxLinearPower(0.23)
+                new Waypoint(createPose(secondSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
         );
 
 

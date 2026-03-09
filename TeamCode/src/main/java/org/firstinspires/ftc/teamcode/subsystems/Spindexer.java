@@ -190,8 +190,8 @@ public class Spindexer implements Component {
         }
 //
         if (jammed) {
-            spindexerMotor.setPower(-0.3);
-            if (jamTime.milliseconds() > 500) jammed = false;
+            spindexerMotor.setPower(0);
+            if (jamTime.milliseconds() > 200) jammed = false;
         } else {
             updateIndexerPosition();
         }
