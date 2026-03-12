@@ -281,6 +281,8 @@ public class CompetitionTele extends LinearOpMode {
         } else if (gp2.isFirstX()) {
             robot.shooter.setShooterOff();
 
+        } else if (gp1.isFirstX()) {
+            robot.shooter.setShooterOff();
         }
 
         if (gp2.isFirstLeftBumper()) {
