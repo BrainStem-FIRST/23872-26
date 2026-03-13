@@ -38,7 +38,7 @@ public class Constants {
             // PID Constants
             public double INDEXER_KP = -0.0036;
             public double INDEXER_KI = 0.0;
-            public double INDEXER_KD = 0.0;
+            public double INDEXER_KD = 0.00005;
             public double INDEXER_KF = 0.035;
 
             // Position Constants (ticks)

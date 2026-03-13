@@ -92,12 +92,7 @@ public class Spindexer implements Component {
 
         hub.init(config);
 
-
-
-
         this.absoluteEncoderStartingOffset = -60; // position that the absolute encoder reads when the indexer is centered
-
-
     }
 
     public void updateIndexerPosition() {
@@ -125,7 +120,7 @@ public class Spindexer implements Component {
         if (Math.abs(error) > maxPowerErrorThreshold) {
             spindexerMotor.setPower(maxPower * Math.signum(power));
         } else {
-            if (isStatic() || (isUnjamming && antijamTimer.milliseconds()<500)  ){
+            if (isStatic() || (isUnjamming && antijamTimer.milliseconds()>200 && antijamTimer.milliseconds() <500)  ){
                 //
                 spindexerMotor.setPower(0);
             } else {
@@ -135,7 +130,6 @@ public class Spindexer implements Component {
                 spindexerMotor.setPower(power);
             }
         }
-
     }
 ;
     public void setTargetAdj(int adjust) {
@@ -201,10 +195,6 @@ public class Spindexer implements Component {
         boolean isCurrentlyMoving = !isStatic();
         justFinishedMoving = wasMoving && !isCurrentlyMoving;
         wasMoving = isCurrentlyMoving;
-
-
-
-
     }
 
     public boolean isJammed() {

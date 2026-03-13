@@ -23,7 +23,7 @@ public class BallSensor {
     public ElapsedTime timer = new ElapsedTime();
     private boolean isWaitingForColor = false;
 
-    public static double delayTimeMs = 25;
+    public static double delayTimeMs = 15;
     public static double ballDistance = 5.8;
     public static double ballMinDistance = 0.5;
     public boolean isIndexing = false;
