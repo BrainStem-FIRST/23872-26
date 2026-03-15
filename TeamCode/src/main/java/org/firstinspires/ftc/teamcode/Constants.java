@@ -132,7 +132,7 @@ public class Constants {
 
     public static class DriveConstants {
 
-        public static double ALIGNMENT_KP = 0.4;
+        public static double ALIGNMENT_KP = 0.35;
         public static double ALIGNMENT_KI = 0.0;
         public static double ALIGNMENT_KD = 0.00001;
 

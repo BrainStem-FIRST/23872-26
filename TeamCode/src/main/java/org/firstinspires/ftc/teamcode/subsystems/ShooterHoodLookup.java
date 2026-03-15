@@ -18,11 +18,14 @@ public class ShooterHoodLookup {
         shooterLookup.add(55, 1240);
         hoodLookup.add(55, 0.60);
 
-        shooterLookup.add(66.759, 1300);
+        shooterLookup.add(60, 1255);
+        hoodLookup.add(60, 0.595);
+
+        shooterLookup.add(66.759, 1300); // may need to be changed
         hoodLookup.add(66.759, 0.59);
 
-        shooterLookup.add(79.5656, 1380);
-        hoodLookup.add(79.5656, 0.48);
+        shooterLookup.add(79.5656, 1350);
+        hoodLookup.add(79.5656, 0.57);
 
         shooterLookup.add(97.5807, 1450);
         hoodLookup.add(97.5807, 0.55);

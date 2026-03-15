@@ -22,46 +22,60 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Autonomous(name="1 Gate Close - Blue", group = "BLUE")
+@Autonomous(name="1 Gate Close - Red 12", group = "RED")
 @Config
 
-public class OneGBlueClose extends LinearOpMode {
+public class OneGRedClose12 extends LinearOpMode {
     public List<String> order1 = new ArrayList<>(Arrays.asList("P", "P", "G"));
 
     public List<String> targetOrder = order1; // default
 
 
-    public static double[] start = new double[] { -65, -41.75, 0};
+    public static double[] start = new double[] { -65, 41.75, 0};
 
     //Obelisk look
-    public static double[] lookAtOb = new double[] {-23,-23, -195};
+    public static double[] lookAtOb = new double[] {-22,22, 195};
 
     //Open Gate
-    public static double[] openGatePos = new double[] {-7,-72+6+5.25-0.25, 135};
+    public static double[] openGatePos = new double[] {-7,72-6-5.25, -180};
+    public static double[] limelight = new double[] {-24, 24, -135};
 
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-39, -39, -135};
-    public static double[] collect1Pre = new double[] { -12, -31, -90 };
-    public static double[] collect1Mid = new double[] { -12, -22, -90 };
+    public static double[] close1Shooting = new double[] {-38.5, 38.5, 135};
+    public static double[] collect1Pre = new double[] { -13, 29, 90 };
+    public static double[] collect1Mid = new double[] { -13, 22, 90 };
+//    public static double[] collect1 = new double[] { -12, -39, -90 };
+//    public static double[] collect2 = new double[] { -12, -44, -90 };
+//    public static double[] collect3 = new double[] { -2, -49, -90 };
 
-    public static double[] firstSpikeEnd = new double[] { -12, -58, -90 };
-    public static double[] strafePos = new double[] { -17, -36, -90 };
+    public static double[] collect2Mid = new double[] { 12, 30, 90 };
+
+    public static double[] collect3Pre = new double[] { 36, 31, 90 };
+    public static double[] collect3PrePass = new double[] { 12, 45, 90 };
+
+
+    public static double[] thirdSpikeENd = new double[] { 36, 51, 90 };
+
+    public static double[] firstSpikeEnd = new double[] { -12, 51, 90 };
+    public static double[] strafePos = new double[] { -17, 36, 90 };
 
     //2nd spike!!
-
-    public static double[] collect2Mid = new double[] { 9, -25, -90 };
-    public static double[] collect2Pre = new double[] { 9, -31, -90 };
+    public static double[] collect2Pre = new double[] { 12, 24, 90 };
 
 
-    public static double[] secondSpikeEnd = new double[] { 9, -64, -90 };
+//    public static double[] collect4 = new double[] { 10, -40, -90 };
+//    public static double[] collect5 = new double[] { 10, -45, -90 };
+//    public static double[] collect6 = new double[] { 10, -50, -90 };
+
+    public static double[] secondSpikeEnd = new double[] { 12, 51, 90 };
     public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
     private static class PARAMS{
-        private double COLLECT_DRIVE_MAX_POWER = 0.15;
+        private double COLLECT_DRIVE_MAX_POWER = 0.23;
     }
-    public static OneGBlueClose.PARAMS PARAMS = new OneGBlueClose.PARAMS();
+    public static OneGRedClose12.PARAMS PARAMS = new OneGRedClose12.PARAMS();
 
 
     @Override
@@ -74,14 +88,17 @@ public class OneGBlueClose extends LinearOpMode {
 
 
 
-        DrivePath driveToOb = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(lookAtOb)).setMaxLinearPower(1)
-        );
 
         DrivePath openGate = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(openGatePos)).setMaxLinearPower(0.5).setMaxTime(1.5)
+
+                new Waypoint(createPose(openGatePos)).setMaxLinearPower(1).setMaxTime(1),
+                new Waypoint(createPose(limelight))
         );
 
+        DrivePath driveToCollectThirdSpikeEnd = new DrivePath(robot.drive, telemetry,
+                new Waypoint(createPose(collect3Pre)),
+                new Waypoint(createPose(thirdSpikeENd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER)
+        );
 
         DrivePath driveToPreloadShoot = new DrivePath(robot.drive, telemetry,
                 new Waypoint(createPose(close1Shooting))
@@ -111,7 +128,6 @@ public class OneGBlueClose extends LinearOpMode {
         );
 
         DrivePath driveOffLine = new DrivePath(robot.drive, telemetry,
-
                 new Waypoint(createPose(strafePos))
         );
 
@@ -120,9 +136,13 @@ public class OneGBlueClose extends LinearOpMode {
 //                new Waypoint(createPose(collect2Pre)).setSlowDownPercent(0.1)
 //        );
         DrivePath driveToCollectSecondSpikeEnd = new DrivePath(robot.drive, telemetry,
-                new Waypoint(createPose(collect2Mid)),
-                new Waypoint(createPose(collect2Pre)).setSlowDownPercent(0.8),
+                new Waypoint(createPose(collect2Pre)),
                 new Waypoint(createPose(secondSpikeEnd)).setMaxLinearPower(PARAMS.COLLECT_DRIVE_MAX_POWER).setMaxTime(4)
+        );
+
+        DrivePath driveToShoot3 = new DrivePath(robot.drive, telemetry,
+//                new Waypoint(createPose(collect3PrePass)),
+                new Waypoint(createPose(close1Shooting))
         );
 
 //
@@ -148,23 +168,23 @@ public class OneGBlueClose extends LinearOpMode {
                                 driveToPreloadShoot
                         ),
 
-//                        new SleepAction(0.5),
-
-                        new SleepAction(0.7),
+                        new SleepAction(1),
 
 
 
                         AutoActions.rampUp(),
                         new SleepAction(0.2),
 
+
                         AutoActions.moveSpindexer360(),
                         AutoActions.rampDown(),
                         AutoActions.turnShooterOnIdle(),
 
 
+                        // skips to this:
 
 
-                        // FIRST SPIKE
+                        // GATE
 
                         new ParallelAction(
                                 AutoActions.setCollectorOn(),
@@ -174,28 +194,28 @@ public class OneGBlueClose extends LinearOpMode {
 
                         new ParallelAction(
                                 openGate,
+                                AutoActions.setCollectorOff(),
                                 AutoActions.pivotClose(),
                                 AutoActions.shooterTurnOnClose()
                         ),
 
 
-                        AutoActions.waitForLimelightAuto(),
 
-                        // ADD WAIT TIMES IF NEED HERE TODO
+                        AutoActions.waitForLimelightAuto(),
 
 
                         new ParallelAction(
                                 driveToShootOne,
-                                AutoActions.moveSpindexerMot(0, telemetry)
+                                AutoActions.moveSpindexerMot(1, telemetry)
                         ),
 
-                        AutoActions.setCollectorOff(),
 
-                        new SleepAction(0.7),
 
                         AutoActions.rampUp(),
+//                            new SleepAction(0.2),
                         new SleepAction(0.2),
                         AutoActions.moveSpindexer360(),
+
                         AutoActions.rampDown(),
                         AutoActions.turnShooterOnIdle(),
 
@@ -208,6 +228,7 @@ public class OneGBlueClose extends LinearOpMode {
 
 
                         new ParallelAction(
+                                AutoActions.setCollectorOff(),
                                 AutoActions.shooterTurnOnClose()
                                 , AutoActions.pivotClose()
                                 , driveToShootTwo,
@@ -216,15 +237,34 @@ public class OneGBlueClose extends LinearOpMode {
                         ),
 
 
-                        AutoActions.setCollectorOff(),
-
-                        new SleepAction(0.7),
-
-
 
                         AutoActions.rampUp(),
-                        new SleepAction(0.25),
+//                            new SleepAction(0.2),
+                        new SleepAction(0.2),
                         AutoActions.moveSpindexer360(),
+                        AutoActions.rampDown(),
+                        AutoActions.turnShooterOnIdle(),
+                        //3rd
+
+                        new ParallelAction(
+                                AutoActions.setCollectorOn(),
+                                driveToCollectThirdSpikeEnd
+                        ),
+
+                        new ParallelAction(
+                                AutoActions.setCollectorOff(),
+                                AutoActions.shooterTurnOnClose()
+                                , AutoActions.pivotClose()
+                                , driveToShoot3
+                        ),
+
+
+                        AutoActions.moveSpindexerMot(3, telemetry),
+
+                        AutoActions.rampUp(),
+                        new SleepAction(0.2),
+                        AutoActions.moveSpindexer360(),
+
                         AutoActions.rampDown(),
                         AutoActions.turnShooterOnIdle(),
 
