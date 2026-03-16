@@ -163,7 +163,6 @@ public class CompetitionTele extends LinearOpMode {
 
             alignmentPID.setTarget(Angle.normDelta(targetAngle));
 
-//            rx = alignmentPID.updateWithError(error); // TODO: TEST THIS
 
             double pidOut = alignmentPID.update(currentHeading);
 
@@ -296,7 +295,7 @@ public class CompetitionTele extends LinearOpMode {
 
 
         if (gp2.isFirstDpadUp()) {
-            robot.park.setParkUp();
+
         }
 
         if (gp2.isFirstDpadDown()) {
@@ -309,7 +308,7 @@ public class CompetitionTele extends LinearOpMode {
         }
 
         if (gp2.isFirstLeftBumper()) {
-            robot.spindexer.fineAdjInDir();
+            robot.park.setParkUp();
         }
 
     }

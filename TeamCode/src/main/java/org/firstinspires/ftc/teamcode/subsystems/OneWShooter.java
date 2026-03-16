@@ -117,8 +117,8 @@ public class OneWShooter implements Component {
     public void update() {
         switch (shooterState) {
             case OFF:
-                shooterMotorOne.setPower(0); // -0.07
-                shooterMotorTwo.setPower(0);
+                shooterMotorOne.setPower(-0.07); // -0.07
+                shooterMotorTwo.setPower(-0.07);
 
                 targetVel = 0;
                 break;

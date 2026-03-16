@@ -43,27 +43,27 @@ public class OneGRedClose extends LinearOpMode {
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-38.5, 38.5, 135};
-    public static double[] collect1Pre = new double[] { -13, 29, 90 };
+    public static double[] close1Shooting = new double[] {-38, 38, 135};
+    public static double[] collect1Pre = new double[] { -13, 27 , 90 };
     public static double[] collect1Mid = new double[] { -13, 22, 90 };
 //    public static double[] collect1 = new double[] { -12, -39, -90 };
 //    public static double[] collect2 = new double[] { -12, -44, -90 };
 //    public static double[] collect3 = new double[] { -2, -49, -90 };
 
-    public static double[] collect2Mid = new double[] { 12, 30, 90 };
+    public static double[] collect2Mid = new double[] { 9, 30, 90 };
 
     public static double[] firstSpikeEnd = new double[] { -12, 51, 90 };
     public static double[] strafePos = new double[] { -17, 36, 90 };
 
     //2nd spike!!
-    public static double[] collect2Pre = new double[] { 12, 24, 90 };
+    public static double[] collect2Pre = new double[] { 9, 24, 90 };
 
 
 //    public static double[] collect4 = new double[] { 10, -40, -90 };
 //    public static double[] collect5 = new double[] { 10, -45, -90 };
 //    public static double[] collect6 = new double[] { 10, -50, -90 };
 
-    public static double[] secondSpikeEnd = new double[] { 12, 51, 90 };
+    public static double[] secondSpikeEnd = new double[] { 9, 51, 90 };
     public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
     private static class PARAMS{

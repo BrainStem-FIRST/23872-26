@@ -42,11 +42,11 @@ public class OneGBlueClose extends LinearOpMode {
 
 
     //1st Spike!!
-    public static double[] close1Shooting = new double[] {-39, -39, -135};
+    public static double[] close1Shooting = new double[] {-38, -38, -135};
     public static double[] collect1Pre = new double[] { -12, -31, -90 };
     public static double[] collect1Mid = new double[] { -12, -22, -90 };
 
-    public static double[] firstSpikeEnd = new double[] { -12, -58, -90 };
+    public static double[] firstSpikeEnd = new double[] { -12, -53, -90 };
     public static double[] strafePos = new double[] { -17, -36, -90 };
 
     //2nd spike!!
@@ -55,11 +55,11 @@ public class OneGBlueClose extends LinearOpMode {
     public static double[] collect2Pre = new double[] { 9, -31, -90 };
 
 
-    public static double[] secondSpikeEnd = new double[] { 9, -64, -90 };
+    public static double[] secondSpikeEnd = new double[] { 9, -53, -90 };
     public static double collectMaxPower = 0.3;
     BrainSTEMRobot robot;
     private static class PARAMS{
-        private double COLLECT_DRIVE_MAX_POWER = 0.15;
+        private double COLLECT_DRIVE_MAX_POWER = 0.18;
     }
     public static OneGBlueClose.PARAMS PARAMS = new OneGBlueClose.PARAMS();
 
