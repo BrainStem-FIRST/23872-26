@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -104,6 +105,14 @@ public class AutoActions {
 
     public static Action moveSpindexer360() {
         return moveSpindexer360Hi();
+    }
+
+    public static Action resetOdoWLime(){
+        return robot.limelight.resetOdoWLime();
+    }
+
+    public static Action limelightPoseReset() {
+        return new InstantAction(() -> robot.limelight.resetOdoWLime());
     }
 
 

@@ -16,29 +16,6 @@ import org.firstinspires.ftc.teamcode.utils.Drawing;
 import org.firstinspires.ftc.teamcode.utils.GamepadTracker;
 import org.firstinspires.ftc.teamcode.utils.PIDController;
 
-/*
-What to do:
-
-RETUNE COLOR SENSOR
-
-AUTO ADJUSTING BUTTON THAT ADJUSTS IN THE RIGHT DIRECTION, WHEN CLOSE ENOUGH GP RUMBLEs
-
-INTAKE SLOWS WHEN A BALL IS TRYING TO BE TURNED
-
-ADD ELApSED TIMER AFTER DETECTING BALL AND BEOFRE SHOOTING
-
-ADD DIFF BUTTONS TO SHOOT ALL MOTIFS
-
-
-AUTO PIVOTING CODE
-
-FIX ANTIJAM
-
-
-
-P1: auto align - according to dante spins in one direction for eternity && auto
-    wrap issue? try update with error
- */
 public class CompetitionTele extends LinearOpMode {
 
     private Pose2d newPose;
@@ -89,20 +66,12 @@ public class CompetitionTele extends LinearOpMode {
                 Constants.DriveConstants.ALIGNMENT_KI,
                 Constants.DriveConstants.ALIGNMENT_KD
         );
-
-
-
-
-
-
         telemetry.addLine("Robot is Ready!");
 
         telemetry.addData("Limelight connectivty", robot.limelight.limelight.isConnected());
         telemetry.update();
 
         waitForStart();
-
-
 
         while (!opModeIsActive()) {
             telemetry.update();
@@ -125,8 +94,6 @@ public class CompetitionTele extends LinearOpMode {
 
             updateDriver2();
 
-
-
             if (gamepad2.left_trigger > 0.13) {
                 if (red){
                     newPose = redPose;
@@ -134,18 +101,13 @@ public class CompetitionTele extends LinearOpMode {
                     newPose = bluePose;
                 }
                 robot.drive.localizer.setPose(newPose);
-
             }
-
-
 
         }
     }
 
-
     private void updateD1Drive() {
 
-        // DRIVING ==========================================
         double y = -gamepad1.left_stick_y * 0.99;
         double x = gamepad1.left_stick_x * 0.99;
         double rx = gamepad1.right_stick_x * 0.75;
@@ -163,7 +125,6 @@ public class CompetitionTele extends LinearOpMode {
 
             alignmentPID.setTarget(Angle.normDelta(targetAngle));
 
-
             double pidOut = alignmentPID.update(currentHeading);
 
             double power = pidOut + Math.signum(pidOut) * 0.12;
@@ -176,7 +137,6 @@ public class CompetitionTele extends LinearOpMode {
             rx = power;
         }
 
-
         robot.drive.setMotorPowers(
                 y + x + rx,
                 y - x - rx,
@@ -185,23 +145,20 @@ public class CompetitionTele extends LinearOpMode {
         );
     }
 
-
     // D1 SUBSYSTEM CONTROLS =====================================================
     private void updateD1Buttons() {
-
-
         if (gamepad1.left_trigger > 0.1) {
             robot.collector.collectorState = Collector.CollectorState.EXTAKE;
-        }
-        else if (gamepad1.right_trigger > 0.1) {
+        } else if (gamepad1.right_trigger > 0.1) {
             robot.collector.collectorState = Collector.CollectorState.INTAKE;
-        }
-        else {
+        } else {
             robot.collector.collectorState = Collector.CollectorState.OFF;
         }
+
         if (gp1.isFirstLeftBumper()) {
             robot.spindexer.setTargetAdj(Constants.spindexerConstants.TICKS_120);
         }
+
         if (gp1.isFirstRightBumper() && !wasHit) {
             robot.ramp.setRampUp();
             pressedTime.reset();
@@ -213,12 +170,14 @@ public class CompetitionTele extends LinearOpMode {
                 gamepad1.rumble(500);
             }
         }
+
         if (robot.hit && pressedTime.milliseconds() > 250 && robot.shooter.isUpToSpeed()) {
             robot.spindexer.startShootingEncoder = robot.spindexer.wrappedEncoder;
             robot.spindexer.setTargetAdj(Constants.spindexerConstants.TICKS_360);
             robot.hit = false;
             wasHit = true;
         }
+
         if ((wasHit && pressedTime.milliseconds() > 2500 && (robot.shooter.isShootFar())) || (wasHit && pressedTime.milliseconds() > 2000 && robot.shooter.isShootClose())) {
             robot.ramp.setRampDown();
             wasHit = false;
@@ -227,6 +186,7 @@ public class CompetitionTele extends LinearOpMode {
             isHitting = false;
             hittingTime.reset();
         }
+
         if (isHitting && hittingTime.milliseconds() > 500) {
             robot.shooter.setShooterOff();
             isHitting = false;
@@ -235,7 +195,6 @@ public class CompetitionTele extends LinearOpMode {
         if (gp1.isFirstX()) {
             robot.shooter.setShooterOff();
         }
-
 
         if (gp1.isFirstDpadRight()) {
             robot.ramp.setRampUp();
@@ -246,10 +205,12 @@ public class CompetitionTele extends LinearOpMode {
         if (gp1.isFirstDpadLeft()) {
             robot.ramp.setRampDown();
         }
+
         if (gamepad1.a) {
             robot.shooter.setShooterShootClose();
             robot.pivot.setPivotShootClose();
         }
+
         if (gp1.isFirstDpadLeft()) {
             robot.ramp.setRampDown();
         }
@@ -257,15 +218,7 @@ public class CompetitionTele extends LinearOpMode {
 
     private void updateDriver2() {
 
-
-
-
-
-
-        // makes any shooter button pressed after turned on, turn it off
-
         if (gp2.isFirstA()) {
-
             if (gamepad2.right_trigger > 0.2) {
                 robot.shooter.setShooterShootAuto();
                 robot.pivot.setPivotShootAuto();
@@ -285,17 +238,8 @@ public class CompetitionTele extends LinearOpMode {
             robot.shooter.setShooterOff();
         }
 
-
-
         if (gp2.isFirstDpadRight()) {
             robot.ramp.setRampUp();
-        }
-
-
-
-
-        if (gp2.isFirstDpadUp()) {
-
         }
 
         if (gp2.isFirstDpadDown()) {
@@ -310,7 +254,5 @@ public class CompetitionTele extends LinearOpMode {
         if (gp2.isFirstLeftBumper()) {
             robot.park.setParkUp();
         }
-
     }
-
 }

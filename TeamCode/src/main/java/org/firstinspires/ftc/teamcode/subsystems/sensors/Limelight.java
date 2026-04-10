@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems.sensors;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.BrainSTEMRobot;
-import org.firstinspires.ftc.teamcode.utils.BallTracker;
 import org.firstinspires.ftc.teamcode.utils.BallTrackerNew;
 import org.firstinspires.ftc.teamcode.utils.Component;
 
@@ -14,7 +16,6 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Config
@@ -153,6 +154,30 @@ public class Limelight implements Component {
             return (2 * 1024) /3;
         }
         return 1024;
+    }
+
+    public Action resetOdoWLime() {
+        LLResult result = limelight.getLatestResult();
+        if (result != null && result.isValid() && result.getTa() > 0.5) {
+
+            Pose3D botpose = result.getBotpose();
+
+            if (botpose != null) {
+                double x = botpose.getPosition().x * 39.3701; // in inches
+                double y = botpose.getPosition().y * 39.3701;
+
+                double headingRad = Math.toRadians(botpose.getOrientation().getYaw());
+
+                Pose2d newPose = new Pose2d(x, y, headingRad);
+
+                robot.drive.localizer.setPose(newPose);
+
+                telemetry.addLine("LIMELIGHT RESETTED");
+                telemetry.addData("New X", x);
+                telemetry.addData("New Y", y);
+            }
+        }
+        return null;
     }
 
     @Override

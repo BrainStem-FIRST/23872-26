@@ -68,6 +68,13 @@ public class Collector implements Component {
                 collectorMotor.setVelocity(Constants.CollectorConstants.AUTO_VELOCITY);
         }
     }
+
+    public void on() {
+        collectorState = CollectorState.INTAKE;
+    }
+    public void off() {
+        collectorState = CollectorState.OFF;
+    }
     @Override
     public String test() {return null;}
 
