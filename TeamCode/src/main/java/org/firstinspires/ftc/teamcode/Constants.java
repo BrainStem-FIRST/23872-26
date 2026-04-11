@@ -43,11 +43,7 @@ public class Constants {
         public double INDEXER_SMALL_KP_THRESHOLD = 1024 * (15. / 360.);
         public double INDEXER_KD = 0.0001;
         public double INDEXER_KF = 0;
-//            public double INDEXER_KP = -0.0033;
-//            public double INDEXER_KD = 0.00006;
-//            public double INDEXER_KF = 0.031;
 
-        // Position Constants (ticks)
         public int TICKS_120 = 1024/3;
         public int TICKS_60 = 48* (1024/288);
         public int TICKS_360 = 1024;
@@ -70,21 +66,6 @@ public class Constants {
         public static final double OFF_POWER = 0.0;
     }
 
-//        public static class FingerConstants {
-//
-//            // Servo PWM Range
-//            public static final int DOWN_PWM = 837;
-//            public static final int UP_PWM = 1258;
-//
-//            // Servo Position
-//            public static final double DOWN_POSITION = 0.07;
-//            public static final double UP_POSITION = 0.99;
-//
-//            // Timing Constants (seconds)
-//            public static final double UP_TIME = 0.3;
-//            public static final double DOWN_TIME = 0.3;
-//        }
-
     public static final class RampConstants {
 
         // Servo PWM Range
@@ -95,8 +76,6 @@ public class Constants {
         public double DOWN_POSITION = 0.99; // change
         public double UP_POSITION = 0.4; // change
     }
-
-
     public static RampConstants rampConstants = new RampConstants();
 
     public static final class ParkConstants {
@@ -109,9 +88,7 @@ public class Constants {
         public double DOWN_POSITION = 0.01; // change
         public double UP_POSITION = 0.99; // change
     }
-
     public static ParkConstants parkConstants = new ParkConstants();
-
 
     public static final class PivotConstants {
 
@@ -127,7 +104,6 @@ public class Constants {
         public static final int RIGHT_DOWN_POS = 2400; // change
         public static final int RIGHT_UP_POS = 1; // change
     }
-
     public static PivotConstants pivotConstants = new PivotConstants();
 
     public static class DriveConstants {

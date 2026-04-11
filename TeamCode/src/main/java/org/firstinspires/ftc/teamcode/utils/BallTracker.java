@@ -1,76 +1,250 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
+
+import com.acmerobotics.dashboard.config.Config;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Queue;
-@Deprecated
+
+@Config
+
 public class BallTracker {
-    // HAS TO BE IN SHOOT POS BEFORE
-    //only tracks state - to be tested
-    //declarations
+
+
+
+
+    private static final int TICKS_PER_REV = 1024;
+    private static final int TICKS_PER_SLOT = 2730;
     private Spindexer spindexer;
     private Telemetry telemetry;
-
-    public List<String> targetMotif; // add color sensor stuff to here
-
-   public List<String> pos = new ArrayList<>(Arrays.asList("GREEN", "NA", "PURPLE", "NA", "PURPLE", "NA"));
-
-   public final List<String> motif1 = new ArrayList<>(Arrays.asList("PURPLE", "PURPLE", "GREEN")); // purple, purple, green
-     public final List<String> motif2 = new ArrayList<>(Arrays.asList("PURPLE", "GREEN", "PURPLE")); // purple green purple
-    public final List<String> motif3 = new ArrayList<>(Arrays.asList("GREEN", "PURPLE", "PURPLE")); // green, purple, purple
-
-    public int getBestRotation() {
-
-        if ((Objects.equals(pos.get(1), "NA")) || (Objects.equals(pos.get(3), "NA")) || (Objects.equals(pos.get(5), "NA"))) {
-            return 0;
-        }
-        // shoot immediately
-        List<String> seqA = Arrays.asList(pos.get(3), pos.get(1), pos.get(5));
-        // rotate 120
-        List<String> seqB = Arrays.asList(pos.get(1), pos.get(5), pos.get(3));
-        // rotate 240
-        List<String> seqC = Arrays.asList(pos.get(5), pos.get(3), pos.get(1));
-        // get scores
-        int scoreA = calculateScore(seqA, targetMotif);
-        int scoreB = calculateScore(seqB, targetMotif);
-        int scoreC = calculateScore(seqC, targetMotif);
-        // find best one
-        if (scoreA >= scoreB && scoreA >= scoreC) {
-            return 0;
-        } else if (scoreB >= scoreC) {
-            return 96;
-        } else {
-            return 192;
-        }
+    private int spindTick; // spind ticks from encoder
+    private int spindAbsTicks;
+    public Slot thisBall;
+    public enum BallColor {
+        PURPLE,
+        GREEN,
+        EMPTY
     }
 
-    private int calculateScore(List<String> option, List<String> target) {
+
+    public static final List<BallColor> motif1 = new ArrayList<>(Arrays.asList(BallColor.PURPLE, BallColor.PURPLE, BallColor.GREEN));
+    public static final List<BallColor> motif2 = new ArrayList<>(Arrays.asList(BallColor.PURPLE, BallColor.GREEN, BallColor.PURPLE));
+    public static final List<BallColor> motif3 = new ArrayList<>(Arrays.asList(BallColor.GREEN, BallColor.PURPLE, BallColor.PURPLE));
+
+
+
+    public static List<BallColor> targetMotif;
+    public BallTracker(Spindexer spindexer) {
+        this.spindexer = spindexer;
+        this.targetMotif = motif1;
+    }
+    public class Slot {
+        public String name;
+        public BallColor color;
+        public int pos; // 0 - whatever ------- actual enc positon
+        public int currentAbsPos; // 0 - 1024
+        public Slot(String name, int pos, int currentAbsPos) {
+            this.name = name;
+            this.pos = pos;
+            this.color = BallColor.EMPTY;
+            this.currentAbsPos = 0;
+        }
+    }
+    public Slot slotA = new Slot("Slot A", 0, 0);
+    public Slot slotC = new Slot("Slot C", 341, 341);
+    public Slot slotB = new Slot("Slot B", 682, 682);
+
+    public void update() {
+        spindTick = spindexer.getCurrentPosition();
+        spindAbsTicks = calcAbsPos(spindTick);
+
+        updateSlotTicks(slotA);
+        updateSlotTicks(slotB);
+        updateSlotTicks(slotC);
+    }
+    private void updateSlotTicks(Slot slot) {
+        int calculatedPos = spindTick + slot.pos;
+        slot.currentAbsPos = calcAbsPos(calculatedPos);
+    }
+    private int calcAbsPos(int ticks) {
+        return ticks % TICKS_PER_REV;
+    }
+    public void setSlotClr(Slot slot, BallColor color) {
+        slot.color = color;
+    }
+    public Slot getSlotAtShootingPos() {
+        if (slotA.currentAbsPos < 350 && slotA.currentAbsPos > 330) return slotA;
+        if (slotB.currentAbsPos < 350 && slotB.currentAbsPos > 330) return slotB;
+        return slotC;
+    }
+
+    public Slot getSlotAtCollectPos() {
+        if (slotA.currentAbsPos < 50 || slotA.currentAbsPos > 970) return slotA;
+        if (slotB.currentAbsPos < 50 || slotB.currentAbsPos > 970) return slotB;
+        return slotC;
+    }
+    public Slot getSlotAtOtherPos() {
+        if (slotA.currentAbsPos < 690 && slotA.currentAbsPos > 670) return slotA;
+        if (slotB.currentAbsPos < 690 && slotB.currentAbsPos > 570) return slotB;
+        return slotC;
+    }
+
+
+
+    public boolean isNextSlotEmpty() {
+         thisBall = getSlotAtCollectPos();
+
+         if (Objects.equals(thisBall.name, "Slot A")) {
+             return slotB.color.equals(BallColor.EMPTY);
+         }
+
+        if (Objects.equals(thisBall.name, "Slot B")) {
+            return slotC.color.equals(BallColor.EMPTY);
+        }
+        if (Objects.equals(thisBall.name, "Slot C")) {
+            return slotA.color.equals(BallColor.EMPTY);
+        }
+
+        return false;
+
+    }
+
+
+
+    public int getBestRotation() {
+        List<BallColor> stateA = Arrays.asList(slotA.color, slotB.color, slotC.color);
+
+        List<BallColor> stateB = Arrays.asList(slotB.color, slotC.color, slotA.color);
+
+        List<BallColor> stateC = Arrays.asList(slotC.color, slotA.color, slotB.color);
+
+        int scoreA = calculateScore(stateA, targetMotif);
+        int scoreB = calculateScore(stateB, targetMotif);
+        int scoreC = calculateScore(stateC, targetMotif);
+
+        int targetShooterTick = 1024/3;
+        int bestDelta = 0;
+
+        if (scoreA >= scoreB && scoreA >= scoreC) {
+            bestDelta = (targetShooterTick - slotA.currentAbsPos + 1024) % 1024;
+        } else if (scoreB >= scoreC) {
+            bestDelta = (targetShooterTick - slotB.currentAbsPos + 1024) % 1024;
+        } else {
+            bestDelta = (targetShooterTick - slotC.currentAbsPos + 1024) % 1024;
+        }
+
+        return bestDelta;
+
+
+    }
+
+    public int getPPGRotation() {
+        List<BallColor> stateA = Arrays.asList(slotA.color, slotB.color, slotC.color);
+
+        List<BallColor> stateB = Arrays.asList(slotB.color, slotC.color, slotA.color);
+
+        List<BallColor> stateC = Arrays.asList(slotC.color, slotA.color, slotB.color);
+
+        int scoreA = calculateScore(stateA, motif1);
+        int scoreB = calculateScore(stateB, motif1);
+        int scoreC = calculateScore(stateC, motif1);
+
+        int targetShooterTick = 1024/3;
+        int bestDelta = 0;
+
+        if (scoreA >= scoreB && scoreA >= scoreC) {
+            bestDelta = (targetShooterTick - slotA.currentAbsPos + 1024) % 1024;
+        } else if (scoreB >= scoreC) {
+            bestDelta = (targetShooterTick - slotB.currentAbsPos + 1024) % 1024;
+        } else {
+            bestDelta = (targetShooterTick - slotC.currentAbsPos + 1024) % 1024;
+        }
+
+        return bestDelta;
+
+
+    }
+    public int getBestPGPRotation() {
+        List<BallColor> stateA = Arrays.asList(slotA.color, slotB.color, slotC.color);
+
+        List<BallColor> stateB = Arrays.asList(slotB.color, slotC.color, slotA.color);
+
+        List<BallColor> stateC = Arrays.asList(slotC.color, slotA.color, slotB.color);
+
+        int scoreA = calculateScore(stateA, motif2);
+        int scoreB = calculateScore(stateB, motif2);
+        int scoreC = calculateScore(stateC, motif2);
+
+        int targetShooterTick = 1024/3;
+        int bestDelta = 0;
+
+        if (scoreA >= scoreB && scoreA >= scoreC) {
+            bestDelta = (targetShooterTick - slotA.currentAbsPos + 1024) % 1024;
+        } else if (scoreB >= scoreC) {
+            bestDelta = (targetShooterTick - slotB.currentAbsPos + 1024) % 1024;
+        } else {
+            bestDelta = (targetShooterTick - slotC.currentAbsPos + 1024) % 1024;
+        }
+
+        return bestDelta;
+
+
+    }
+    public int getBestGPPRotation() {
+        List<BallColor> stateA = Arrays.asList(slotA.color, slotB.color, slotC.color);
+
+        List<BallColor> stateB = Arrays.asList(slotB.color, slotC.color, slotA.color);
+
+        List<BallColor> stateC = Arrays.asList(slotC.color, slotA.color, slotB.color);
+
+        int scoreA = calculateScore(stateA, motif3);
+        int scoreB = calculateScore(stateB, motif3);
+        int scoreC = calculateScore(stateC, motif3);
+
+        int targetShooterTick = 1024/3;
+        int bestDelta = 0;
+
+        if (scoreA >= scoreB && scoreA >= scoreC) {
+            bestDelta = (targetShooterTick - slotA.currentAbsPos + 1024) % 1024;
+        } else if (scoreB >= scoreC) {
+            bestDelta = (targetShooterTick - slotB.currentAbsPos + 1024) % 1024;
+        } else {
+            bestDelta = (targetShooterTick - slotC.currentAbsPos + 1024) % 1024;
+        }
+
+        return bestDelta;
+
+
+    }
+
+
+    private int calculateScore(List<BallColor> slotSeq, List<BallColor> target) {
         int score = 0;
         for (int i = 0; i < 3; i++) {
-            // check
-            String ball = option.get(i);
-            String goal = target.get(i);
-            if (!ball.equals("NA") && !ball.equals("EMPTY") && ball.equals(goal)) {
+            BallColor ball = slotSeq.get(i);
+            BallColor goal = target.get(i);
+
+
+            if (ball != BallColor.EMPTY && ball == goal) {
                 score++;
             }
         }
         return score;
     }
-
-    public void addBall(String color) {
-
-        pos.set(0, color);
+    public void removeAll() {
+        slotA.color = BallColor.valueOf("EMPTY");
+        slotB.color = BallColor.valueOf("EMPTY");
+        slotC.color = BallColor.valueOf("EMPTY");
 
     }
 
-    public void rotated60() {Collections.rotate(pos, 1);}
-    public void rotatedNeg60() {Collections.rotate(pos, -1);}
-    public void rotated120() { Collections.rotate(pos,2);}
+    public void addBall(BallColor color) {
+        getSlotAtCollectPos().color = color;
 
+    }
 }

@@ -11,24 +11,22 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import java.util.ArrayList;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.rr.MecanumDrive;
+import org.firstinspires.ftc.teamcode.utils.limelightBallTracking.LimelightBallTracker;
+import org.firstinspires.ftc.teamcode.utils.rr.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Collector;
-import org.firstinspires.ftc.teamcode.subsystems.OneWShooter;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Parking;
 import org.firstinspires.ftc.teamcode.subsystems.Pivot;
 //import org.firstinspires.ftc.teamcode.subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterHoodLookup;
 import org.firstinspires.ftc.teamcode.subsystems.Spindexer;
-import org.firstinspires.ftc.teamcode.subsystems.sensors.Limelight;
 import org.firstinspires.ftc.teamcode.utils.BallSensor;
-import org.firstinspires.ftc.teamcode.utils.BallTrackerNew;
+import org.firstinspires.ftc.teamcode.utils.BallTracker;
 import org.firstinspires.ftc.teamcode.utils.Component;
 
 public class BrainSTEMRobot {
 
-    //NEEDS TO CHOOSE ONE
-    // TODO: Clean up for new subsystems
 
     public static double autoX = 0, autoY = 0, autoH = 0;
     // Don't touch these
@@ -39,15 +37,16 @@ public class BrainSTEMRobot {
     public Collector collector;
     public MecanumDrive drive;
 
-    public Limelight limelight;
+//    public Limelight limelight;
     public BallSensor ballSensor;
     public Pivot pivot;
     public Ramp ramp;
-    public OneWShooter shooter;
+    public Shooter shooter;
     public Parking park;
-    public BallTrackerNew ballTracker;
+    public BallTracker ballTracker;
+    public LimelightBallTracker limelight;
     private boolean goodToMove = false;
-    private BallTrackerNew.BallColor detectedColor;
+    private BallTracker.BallColor detectedColor;
     private ElapsedTime ballDetectTimer = new ElapsedTime();
 
 
@@ -82,22 +81,23 @@ public class BrainSTEMRobot {
 
         spindexer = new Spindexer(hwMap, telemetry, this);
         collector = new Collector(hwMap, telemetry);
-        shooter = new OneWShooter(hwMap, telemetry, this);
+        shooter = new Shooter(hwMap, telemetry, this);
         ramp = new Ramp(hwMap, telemetry);
         pivot = new Pivot(hwMap, telemetry, shooter);
-        limelight = new Limelight(hwMap, telemetry, this);
+//        limelight = new Limelight(hwMap, telemetry, this);
 
-        ballTracker = new BallTrackerNew(spindexer);
-
+        ballTracker = new BallTracker(spindexer);
+        limelight = new LimelightBallTracker(hwMap,telemetry,this);
 
         subsystems.add(limelight);
         subsystems.add(park);
-
         subsystems.add(spindexer);
         subsystems.add(collector);
         subsystems.add(shooter);
         subsystems.add(ramp);
         subsystems.add(pivot);
+
+        subsystems.add(park);
 
         drive = new MecanumDrive(hwMap,startPose);
 
@@ -125,47 +125,45 @@ public class BrainSTEMRobot {
         for (Component c : subsystems) {
             c.update();
         }
+//        TelemetryPacket packet = new TelemetryPacket();
+
+//        limelight.update(packet);
 
         isSpindStopped = (Math.abs(spindexer.targetEncoder - spindexer.getCurrentPosition())) < 50 || spindexer.spindexerMotor.getVelocity()<15;
         ballSensor.setIfIndexerIsMoving(!isSpindStopped);
 
-
-
         String newBall = "EMPTY";
         newBall = ballSensor.scanForNewBall();
-
-
 
         // DETECT BALL IF SPIND IS NOT MOVING
         if (isSpindStopped ) {
 
             if (newBall != null ) {
 
-                BallTrackerNew.BallColor color = BallTrackerNew.BallColor.valueOf(newBall);
+                BallTracker.BallColor color = BallTracker.BallColor.valueOf(newBall);
 
-                BallTrackerNew.Slot collectSlot = limelight.ballTrackerNew.getSlotAtCollectPos();
+                BallTracker.Slot collectSlot = ballTracker.getSlotAtCollectPos();
                 collectSlot.color = color;
 
                 telemetry.addData("Ball Color", color);
 
-                    spindexer.setTargetAdj(341);
+                spindexer.setTargetAdj(341);
 
             }
-
         }
 
-        isNextEmpty = limelight.ballTrackerNew.isNextSlotEmpty();
+        isNextEmpty = ballTracker.isNextSlotEmpty();
 
-        if (shooter.isShootFar() && ramp.isRampUp()) {
+        if (shooter.isShooterFar() && ramp.isRampUp()) {
             ballsShot = getBallsShot();
         }
         else {
             ballsShot = 0;
         }
 
-        if (shooter.isShootFar()) {
+        if (shooter.isShooterFar()) {
             Spindexer.maxPower = 0.5;
-        } else if (shooter.isShootClose()){
+        } else if (shooter.isShooterClose()){
             Spindexer.maxPower = 0.99;
         } else{
             Spindexer.maxPower = 0.99;
@@ -174,9 +172,8 @@ public class BrainSTEMRobot {
         // TELEMETRY ===============================================================================
 //        allTelemetry();
         telemetry.update();
+        // TODO: figure out how to send packet
     }
-
-
 
     private void allTelemetry() {
 
@@ -202,25 +199,23 @@ public class BrainSTEMRobot {
         telemetry.addData("FR", drive.FR.getPower());
         telemetry.addData("BR", drive.BR.getPower());
 
-
-
         telemetry.addData("Target Motif", limelight.targetOrder);
 
         telemetry.addLine("\n=== MOTIF SHOOTING ===");
         telemetry.addData("Best Rotation",  ballTracker.getBestRotation());
         telemetry.addData("Best Rotation",  ballTracker.getPPGRotation());
         telemetry.addData("Target Motif Limelight", limelight.targetOrder);
-        telemetry.addData("Target Motif Ball Tracking", BallTrackerNew.targetMotif);
+        telemetry.addData("Target Motif Ball Tracking", BallTracker.targetMotif);
 
 
         telemetry.addLine("=== SPINDEXER SLOTS ===");
-        telemetry.addData("Slot A", String.format("%s @ %d ticks", limelight.ballTrackerNew.slotA.color, limelight.ballTrackerNew.slotA.currentAbsPos));
-        telemetry.addData("Slot B", String.format("%s @ %d ticks", limelight.ballTrackerNew.slotB.color, limelight.ballTrackerNew.slotB.currentAbsPos));
-        telemetry.addData("Slot C", String.format("%s @ %d ticks", limelight.ballTrackerNew.slotC.color, limelight.ballTrackerNew.slotC.currentAbsPos));
+        telemetry.addData("Slot A", String.format("%s @ %d ticks", ballTracker.slotA.color, ballTracker.slotA.currentAbsPos));
+        telemetry.addData("Slot B", String.format("%s @ %d ticks", ballTracker.slotB.color, ballTracker.slotB.currentAbsPos));
+        telemetry.addData("Slot C", String.format("%s @ %d ticks", ballTracker.slotC.color, ballTracker.slotC.currentAbsPos));
 
         telemetry.addLine("\n=== WHERE IS EACH SLOT ===");
-        telemetry.addData("At Collect Pos", limelight.ballTrackerNew.getSlotAtCollectPos().name);
-        telemetry.addData("At Shooting Pos", limelight.ballTrackerNew.getSlotAtShootingPos().name);
+        telemetry.addData("At Collect Pos", ballTracker.getSlotAtCollectPos().name);
+        telemetry.addData("At Shooting Pos", ballTracker.getSlotAtShootingPos().name);
 
         telemetry.addLine("\n=== DETECTION STATES");
         telemetry.addData("Spind Stopped?", isSpindStopped);
@@ -228,14 +223,14 @@ public class BrainSTEMRobot {
         telemetry.addData("Is Indexing?", ballSensor.isIndexing);
         telemetry.addData("Good To Move?", goodToMove);
         telemetry.addData("Detected Color", detectedColor);
-        telemetry.addData("Collect color - ball tracking", limelight.ballTrackerNew.thisBall);
+        telemetry.addData("Collect color - ball tracking", ballTracker.thisBall);
         telemetry.addData("Is next empty", isNextEmpty);
         telemetry.addData("Color delay time", BallSensor.delayTimeMs);
         telemetry.addData("from delay settle time", BallSensor.settleDelayMs);
 
         telemetry.addLine("\n === PATTERN MATCHING ===");
-        telemetry.addData("Target Motif", limelight.ballTrackerNew.targetMotif);
-        telemetry.addData("Fiducial ID", Limelight.feducialResult);
+        telemetry.addData("Target Motif", ballTracker.targetMotif);
+        telemetry.addData("Fiducial ID", limelight.feducialResult);
 
 
         telemetry.addLine("\n=== COLOR SENSOR ===");

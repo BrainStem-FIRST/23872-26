@@ -3,16 +3,10 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.utils.Component;
-
-
 @Config
 
 public class Pivot implements Component {
@@ -26,9 +20,8 @@ public class Pivot implements Component {
     public static double pointPivot = 0.55;
     public static double farPivot = 0.22; // lower means its up more
 
-
     public double newPos;
-    private OneWShooter shooter;
+    private Shooter shooter;
     public static int leftLower = 651, leftHigher = 2409, rightLower = 2240, rightHigher = 474; // 2132
 
     public enum PivotState{
@@ -41,7 +34,7 @@ public class Pivot implements Component {
     public PivotState pivotState;
     public double closeTargetPosition;
 
-    public Pivot(HardwareMap hardwareMap, Telemetry telemetry, OneWShooter shooter){
+    public Pivot(HardwareMap hardwareMap, Telemetry telemetry, Shooter shooter){
 
 
         leftServo = hardwareMap.get(ServoImplEx.class, "leftHood");
@@ -64,8 +57,7 @@ public class Pivot implements Component {
 
     }
     // ADJUST THIS IF HOOD MOVEMENT IS TOO LARGE
-    public static double HOOD_ADJ_SHOT = -0.04; // Adjust based on testing
-
+    public static double HOOD_ADJ_SHOT = -0.04;
 
     public void updateCompensatedPosition(int shotCount) {
 

@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.utils.Component;
-
-
 @Config
 public class Collector implements Component {
 
@@ -19,7 +17,6 @@ public class Collector implements Component {
     public DcMotorEx collectorMotor;
     public CollectorState collectorState;
     public enum CollectorState {
-
         OFF,
         INTAKE,
         EXTAKE,
@@ -31,8 +28,6 @@ public class Collector implements Component {
         this.telemetry = telemetry;
 
         this.collectorState = CollectorState.OFF;
-
-
 
         collectorMotor = map.get(DcMotorEx.class, "collectorMotor");
 
@@ -46,11 +41,8 @@ public class Collector implements Component {
         );
     }
 
-
     @Override
-    public void reset() {
-
-    }
+    public void reset() {}
 
     @Override
     public void update() {

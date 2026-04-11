@@ -12,9 +12,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.BrainSTEMRobot;
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.srs.SRSHub;
+import org.firstinspires.ftc.teamcode.utils.srs.SRSHub;
 import org.firstinspires.ftc.teamcode.utils.Component;
-import org.firstinspires.ftc.teamcode.utils.PIDController;
 
 
 @Config
@@ -133,9 +132,6 @@ public class Spindexer implements Component {
     }
 
 
-    public void fineAdjInDir() {
-        if (!robot.ramp.isRampUp()) setTargetAdj((int) (-Math.signum(error)* 20)); // TODO: Make sure right direction
-    }
     @Override
     public void reset() {
 
@@ -186,10 +182,6 @@ public class Spindexer implements Component {
             updateIndexerPosition(dt);
         }
 
-
-
-
-
         boolean isCurrentlyMoving = !isStatic();
         justFinishedMoving = wasMoving && !isCurrentlyMoving;
         wasMoving = isCurrentlyMoving;
@@ -207,10 +199,6 @@ public class Spindexer implements Component {
     public int getRawPosition() {
         return hub.readEncoder(6).position;
     }
-
-
-
-
 
 
     public double getError() {

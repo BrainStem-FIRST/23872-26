@@ -15,21 +15,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.BrainSTEMRobot;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Collector;
-import org.firstinspires.ftc.teamcode.subsystems.sensors.Limelight;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import org.firstinspires.ftc.teamcode.utils.limelightBallTracking.LimelightBallTracker;
 
 
 public class AutoActions {
 
     public ElapsedTime spindTime = new ElapsedTime();
-
-
-
-
 
     private static BrainSTEMRobot robot = null;
     public static void setRobot(BrainSTEMRobot robot) {
@@ -61,13 +52,11 @@ public class AutoActions {
     }
 
 
-
-
     // SHOOTER
 
     public static Action shooterTurnOnFar() {
         return telemetryPacket -> {
-            robot.shooter.setShooterShootFar();
+            robot.shooter.setFar();
             telemetryPacket.addLine("Shooter On");
             return false;
         };
@@ -75,7 +64,7 @@ public class AutoActions {
 
     public static Action shooterTurnOnClose() {
         return telemetryPacket -> {
-            robot.shooter.setShooterShootAuto();
+            robot.shooter.setAuto();
             telemetryPacket.addLine("Shooter On");
             return false;
         };
@@ -201,11 +190,6 @@ public class AutoActions {
 //
 //                if (timer.seconds() >= maxTime)
 //                    return false;
-//
-//                telemetry.addData("spindexer is static", robot.spindexer.isStatic());
-//                telemetry.addData("spindexer error", robot.spindexer.getError());
-//                telemetry.addData("spindexer power", robot.spindexer.spindexerMotor.getPower());
-//                return !robot.spindexer.isStatic();
             }
 
 
@@ -243,20 +227,20 @@ public class AutoActions {
         return new Action() {
             private ElapsedTime timer;
             private boolean isFirst = true;
+
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(isFirst) {
+                if (isFirst) {
                     timer = new ElapsedTime();
                     timer.reset();
-                    isFirst = false;
 
+                    robot.limelight.requestObeliskColors();
+                    isFirst = false;
                 }
 
-                robot.limelight.updateObeliskColors();
-                robot.limelight.updateTargetMotif();
+                boolean ready = LimelightBallTracker.feducialResult >= 0;
 
-                boolean ready = Limelight.feducialResult >= 0;
-                return timer.seconds() < 2 && !ready ;
+                return timer.seconds() < 2.0 && !ready;
             }
         };
     }
@@ -280,7 +264,6 @@ public class AutoActions {
     }
 
     // PIVOT
-
     public static Action pivotClose() {
         return new SequentialAction (
                 telemetryPacket -> {
@@ -299,24 +282,7 @@ public class AutoActions {
         );
     }
 
-
     // OTHER
-
-    public static Action shootAll() {
-        return new SequentialAction (
-                telemetryPacket -> {
-//                    toStartOfPatternShoot();
-                    robot.ramp.setRampUp();
-//                    new SleepAction(0.2);
-                    new SleepAction(2.0);
-                    robot.spindexer.setTargetAdj(1024);
-//                    new SleepAction(0.5);
-                    new SleepAction(2.0);
-                    robot.shooter.setShooterIdle();
-                    return false;
-                }
-        );
-    }
 
     public static Action toStartOfPatternShoot() {
         return new Action() {
@@ -326,7 +292,7 @@ public class AutoActions {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (frist) {
-                    int rotationAmount = robot.limelight.ballTrackerNew.getBestRotation();
+                    int rotationAmount = robot.ballTracker.getBestRotation();
 
                     if (rotationAmount == 0) {
                         return false;
@@ -347,7 +313,6 @@ public class AutoActions {
         };
     }
 
-
     public Action triggerSpindexerAtPos(double targetY) {
         return new Action() {
             private boolean triggered = false;
@@ -361,8 +326,6 @@ public class AutoActions {
             }
         };
     }
-
-
 
     public static Action waitForAccurateShooterVelocity() {
         return new Action() {
@@ -379,7 +342,6 @@ public class AutoActions {
                 if (timer.seconds() >= 2.0) {
                     return false;
                 }
-
 
                 // 4. Debugging Telemetry
                 telemetryPacket.put("Shooter Target", robot.shooter.targetVel);

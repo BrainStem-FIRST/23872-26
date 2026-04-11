@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
@@ -8,8 +9,6 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.utils.Component;
-
-
 @Config
 public class Parking implements Component {
 
@@ -33,18 +32,16 @@ public class Parking implements Component {
         this.telemetry = telemetry;
         this.parkState = ParkState.DOWN;
 
-
-
         parkServo = map.get(ServoImplEx.class, "leftPark"); // Control
         parkServo2 = map.get(ServoImplEx.class, "rightPark"); // Expansion
         parkServo.setPwmRange(new PwmControl.PwmRange(950, 2100)); // CHANGE\
         parkServo2.setPwmRange(new PwmControl.PwmRange(950, 2100)); // CHANGE
         targetPosition = Constants.parkConstants.DOWN_POSITION;
     }
-    @Override
-    public void reset() {
 
-    }
+
+    @Override
+    public void reset() {}
 
     public void setTargetPosition() {
         if (activateLeft) parkServo.setPosition(targetPosition);
@@ -78,8 +75,6 @@ public class Parking implements Component {
     public boolean isParkUp() {
         return parkState == ParkState.UP.UP;
     }
-
-
 
     @Override
     public String test() {
