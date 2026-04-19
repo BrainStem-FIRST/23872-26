@@ -80,6 +80,9 @@ public class Auto extends LinearOpMode {
 
 
 
+        robot = new BrainSTEMRobot(hardwareMap, telemetry, this, start);
+        AutoActions.setRobot(robot);
+
         switch(currentAlliance) {
             case BLUE:
                 isBlue = true;
@@ -107,8 +110,6 @@ public class Auto extends LinearOpMode {
         }
 
 
-        robot = new BrainSTEMRobot(hardwareMap, telemetry, this, start);
-        AutoActions.setRobot(robot);
 
         if (isStopRequested()) return;
 
@@ -158,20 +159,20 @@ public class Auto extends LinearOpMode {
             } else if (i.startsWith("2")) {
                 // second spike
                 boolean useGate = i.contains("G");
-                boolean alreadyReadOb = i.contains("O");
+                boolean shouldReadOb = i.contains("O");
 
-                String gateChoose = (useGate && !alreadyReadOb) ? "obelisk" : "none";
+                String gateChoose = (useGate && !shouldReadOb) ? "obelisk" : "none";
 
-                sequenceToRun.add(secondSpikeCollectNShoot(useGate, spike1Collected, alreadyReadOb, gateChoose));
+                sequenceToRun.add(secondSpikeCollectNShoot(useGate, spike1Collected, shouldReadOb, gateChoose));
                 spike2Collected = true;
             } else if (i.startsWith("3")) {
                 // third spike
                 boolean useGate = i.contains("G");
-                boolean alreadyReadOb = i.contains("O");
+                boolean shouldReadOb = i.contains("O");
 
-                String gateChoose = (useGate && !alreadyReadOb) ? "obelisk" : "none";
+                String gateChoose = (useGate && !shouldReadOb) ? "obelisk" : "none";
 
-                sequenceToRun.add(thirdSpikeCollectNShoot(useGate, spike1Collected, spike2Collected, alreadyReadOb, gateChoose));
+                sequenceToRun.add(thirdSpikeCollectNShoot(useGate, spike1Collected, spike2Collected, shouldReadOb, gateChoose));
                 spike3Collected = true;
             } else if (i.equals("E")) {
                 // park
@@ -190,7 +191,7 @@ public class Auto extends LinearOpMode {
     }
 
 
-    private Action firstSpikeCollectNShoot(boolean gate, boolean alreadyReadObelisk, String gateChoose) {
+    private Action firstSpikeCollectNShoot(boolean gate, boolean shouldReadOb, String gateChoose) {
         Pose2d currentPose = robot.drive.localizer.getPose();
         Pose2d controlPoint = createControlPoint(currentPose, spike1);
 
@@ -211,7 +212,7 @@ public class Auto extends LinearOpMode {
         if (gate) {
             Pose2d openGateChosen =
 
-                    alreadyReadObelisk ? openGate : openGateO;
+                    shouldReadOb ? openGate : openGateO;
 
             List<Waypoint> toGateWaypoints = new ArrayList<>();
 
@@ -247,7 +248,7 @@ public class Auto extends LinearOpMode {
         );
     }
 
-    private Action secondSpikeCollectNShoot(boolean gate, boolean firstSpikeAlreadyCollected, boolean alreadyReadObelisk, String gateChoose) {
+    private Action secondSpikeCollectNShoot(boolean gate, boolean firstSpikeAlreadyCollected, boolean shouldReadOb, String gateChoose) {
         Pose2d currentPose = robot.drive.localizer.getPose();
         Pose2d controlPoint = createControlPoint(currentPose, spike2);
 
@@ -266,7 +267,7 @@ public class Auto extends LinearOpMode {
         boolean isObelisk = "obelisk".equalsIgnoreCase(gateChoose);
 
         if (gate) {
-            Pose2d openGateChosen = alreadyReadObelisk ? openGate : openGateO;
+            Pose2d openGateChosen = shouldReadOb ? openGate : openGateO;
 
             driveToGate = new DrivePath(robot.drive, telemetry,
                     new Waypoint(openGateChosen).setMaxTime(1.5)
@@ -320,7 +321,7 @@ public class Auto extends LinearOpMode {
     }
 
 
-    private Action thirdSpikeCollectNShoot(boolean gate, boolean spike1AlreadyCollected, boolean spike2AlreadyCollected, boolean alreadyReadObelisk, String gateChoose) {
+    private Action thirdSpikeCollectNShoot(boolean gate, boolean spike1AlreadyCollected, boolean spike2AlreadyCollected, boolean shouldReadOb, String gateChoose) {
         Pose2d currentPose = robot.drive.localizer.getPose();
 
         Pose2d controlPoint = createControlPoint(currentPose, spike3);
@@ -351,7 +352,7 @@ public class Auto extends LinearOpMode {
         }
 
         if (gate) {
-            Pose2d openGateChosen = alreadyReadObelisk ? openGate : openGateO;
+            Pose2d openGateChosen = shouldReadOb ? openGate : openGateO;
 
             if (spike2AlreadyCollected) {
                 gatePath = new DrivePath(robot.drive, telemetry,

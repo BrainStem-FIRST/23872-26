@@ -34,22 +34,22 @@ public class LimelightBallTracker implements Component {
     public static double LATERAL_KD = 0.008; // need tuning
     public static double FORWARD_KP = 0.028; // need tuning
     public static double LATERAL_DEADBAND_DEG = 3.0;
-    public static double FORWARD_DEADBAND_IN = 1.5;
+    public static double FORWARD_DEADBAND_IN = -6;
     public static double MAX_LATERAL_POWER = 0.45;
     public static double MAX_FORWARD_POWER = 0.38;
-    public static double COLLECTOR_TRIGGER_IN = 14.0;
+    public static double COLLECTOR_TRIGGER_IN = 4;
 
     // camera and ball constants
-    public static double CAMERA_HEIGHT_IN = 8.5; // CHANGE
-    public static double CAMERA_PITCH_DEG = 0.0;  // CHANGE
+    public static double CAMERA_HEIGHT_IN = 8;
+    public static double CAMERA_PITCH_DEG = -5.0;
     public static double BALL_DIAMETER_IN = 4.90;
     public static double FOCAL_LENGTH = 300.0; // CHANGE
     public static double H_FOV_DEG = 63.3;
     public static double V_FOV_DEG = 49.7;
 
     public final Limelight3A limelight;
-    public int snapscriptPipeline = 2;
-    public int apriltagPipeline = 3;
+    public int snapscriptPipeline = 1;
+    public int apriltagPipeline = 0;
 
 
     public List<String> targetOrder;
@@ -132,7 +132,7 @@ public class LimelightBallTracker implements Component {
         Canvas overlay = packet.fieldOverlay();
 
         if (ball == null) {
-            telemetry.addLine("[limelight] no ball detected");
+            telemetry.addLine("[llight] no ball detected");
             FtcDashboard.getInstance().sendTelemetryPacket(packet);
             return;
         }
@@ -144,27 +144,44 @@ public class LimelightBallTracker implements Component {
         overlay.fillCircle(fieldPos[0], fieldPos[1], 2.45);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
 
-        telemetry.addData("[liemlight] balls", ball.numBalls);
-        telemetry.addData("[limelight] tx (deg)", String.format("%.2f", ball.tx));
-        telemetry.addData("[limelight] ty (deg)", String.format("%.2f", ball.ty));
-        telemetry.addData("[limelight] dist (in)", String.format("%.2f", ball.distance));
-        telemetry.addData("[limelight] field x", String.format("%.2f", fieldPos[0]));
-        telemetry.addData("[limelihgt] field y", String.format("%.2f", fieldPos[1]));
+        packet.put("[liemlight] balls", ball.numBalls);
+        packet.put("[limelight] tx (deg)", String.format("%.2f", ball.tx));
+        packet.put("[limelight] ty (deg)", String.format("%.2f", ball.ty));
+        packet.put("[limelight] dist (in)", String.format("%.2f", ball.distance));
+        packet.put("[limelight] field x", String.format("%.2f", fieldPos[0]));
+        packet.put("[limelihgt] field y", String.format("%.2f", fieldPos[1]));
     }
 
     public Action alignLateral() {
         resetPID();
         return new Action() {
+            ElapsedTime timer = null;
             @Override
+
             public boolean run(@NonNull TelemetryPacket packet) {
                 BallResult ball = getClosestBall();
 
+                packet.put("Ball Detected", ball != null);
+
                 if (ball == null) {
+                    if (timer == null) {
+                        timer = new ElapsedTime();
+                    }
+
+                    if (timer.seconds() > 1.0) {
+                        packet.addLine("Ball lost ");
+                        stopDriving();
+                        return false;
+                    }
+
                     stopDriving();
-                    return false;
+                    return true;
                 }
 
+                timer = null;
+
                 double tx = ball.tx;
+                packet.addLine("tx:" + tx);
 
                 if (Math.abs(tx) < LATERAL_DEADBAND_DEG) {
                     stopDriving();
@@ -192,21 +209,57 @@ public class LimelightBallTracker implements Component {
     public Action driveIntoBall(Runnable collectorOn) {
         return new Action() {
             boolean collectorHasBeenTriggered = false;
+            ElapsedTime lostBallTimer = null;
+            double lastForward = MAX_FORWARD_POWER * 0.5;
+            double lastLateral = 0;
 
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 BallResult ball = getClosestBall();
 
+                packet.put("Collector State:", robot.collector.collectorState);
+
                 if (ball == null) {
+                    if (lostBallTimer == null) {
+                        lostBallTimer = new ElapsedTime();
+
+                    }
+
+                    if (lostBallTimer.seconds() < 1) {
+
+                        setDrive(lastForward, 0);
+                        return true;
+                    }
+
                     stopDriving();
                     return false;
                 }
 
+                lostBallTimer = null;
+
+                packet.put("raw_ty", ball.ty);
+                packet.put("raw_radius", ball.radius);
+                packet.put("angle_deg", ball.ty + CAMERA_PITCH_DEG);
+
+                if (!collectorHasBeenTriggered && collectorOn != null) {
+                    collectorOn.run();
+                    collectorHasBeenTriggered = true;
+                }
+
+                packet.put("collectorTriggered", collectorHasBeenTriggered);
+                packet.put("ballVisible", ball != null);
+
+
+
+
                 double dist = ball.distance;
                 double tx = ball.tx;
 
+                packet.put("dist", dist);
+
                 if (dist <= FORWARD_DEADBAND_IN) {
                     stopDriving();
+                    robot.collector.off();
                     return false;
                 }
 
@@ -214,6 +267,7 @@ public class LimelightBallTracker implements Component {
                     collectorOn.run();
                     collectorHasBeenTriggered = true;
                 }
+
 
                 double forward = clamp(
                         FORWARD_KP * (dist - FORWARD_DEADBAND_IN),
@@ -225,8 +279,6 @@ public class LimelightBallTracker implements Component {
                 );
 
                 setDrive(forward, lateral);
-
-
 
                 return true;
             }
@@ -240,7 +292,7 @@ public class LimelightBallTracker implements Component {
     public Action fullCollect(Runnable collectorOn) {
         resetPID();
         return new SequentialAction(
-                alignLateral(),
+                // alignLateral(),
                 driveIntoBall(collectorOn)
         );
     }
@@ -253,11 +305,11 @@ public class LimelightBallTracker implements Component {
 
     public BallResult getClosestBall() {
         LLResult result = limelight.getLatestResult();
-        if (result == null || !result.isValid())
+        if (result == null)
             return null;
 
         double[] output = result.getPythonOutput();
-        if (output == null || output.length < 8)
+        if (output == null || output.length < 7)
             return null;
 
         double tv = output[0];
@@ -269,14 +321,15 @@ public class LimelightBallTracker implements Component {
         double radius = output[4];
         double tx = output[5];
         double ty = output[6];
-        double dist = Math.abs(ty) > 1.0 ? distanceFromTy(ty) : distanceFromPixelWidth(radius * 2.0);
+        double dist = distanceFromTy(ty);
+        // double dist = Math.abs(ty) > 1.0 ? distanceFromTy(ty) : distanceFromPixelWidth(radius * 2.0);
 
         return new BallResult(tx, ty, dist, radius, numBalls);
     }
 
     public BallResult[] getAllBalls() {
         LLResult result = limelight.getLatestResult();
-        if (result == null || !result.isValid()) return new BallResult[0];
+        if (result == null) return new BallResult[0];
 
         double[] output = result.getPythonOutput();
         if (output == null || output.length < 3) return new BallResult[0];
@@ -301,9 +354,12 @@ public class LimelightBallTracker implements Component {
     }
 
     public double distanceFromTy(double ty) {
-        double angle = Math.toRadians(ty + CAMERA_PITCH_DEG);
-        if (Math.abs(angle) < 0.001) return 999.0;
-        return CAMERA_HEIGHT_IN / Math.tan(angle);
+        double angleDeg = -(ty + CAMERA_PITCH_DEG);
+        if (angleDeg <= 0.1) return 999.0;
+        double angleRad = Math.toRadians(angleDeg);
+        double dist = CAMERA_HEIGHT_IN / Math.tan(angleRad);
+        if (dist <= 0 || dist > 200) return 999.0;
+        return dist;
     }
 
     public double distanceFromPixelWidth(double pixelWidth) {

@@ -93,8 +93,8 @@ public class Shooter implements Component {
     public void update() {
         switch (shooterState) {
             case OFF:
-                shooterMotorOne.setPower(-0.07); // -0.07
-                shooterMotorTwo.setPower(-0.07);
+                shooterMotorOne.setPower(0); // -0.07
+                shooterMotorTwo.setPower(0);
 
                 targetVel = 0;
                 break;
