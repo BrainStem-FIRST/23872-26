@@ -35,8 +35,7 @@ public class BallSensorTest extends LinearOpMode {
             telemetry.addData("Green %", "%.3f", ballSensor.gPercent);
             telemetry.addData("Blue %", "%.3f", ballSensor.bPercent);
 
-            // led state
-            telemetry.addData("LED Position", ballSensor.ledLight.getPosition());
+
 
             telemetry.update();
         }

@@ -134,33 +134,6 @@ public class AutoActions {
         };
     }
 
-    private static Action limelightCollect() {
-        return new Action() {
-            boolean first = true;
-            double minTime = 0.7;
-            double maxTime = 2;
-            final ElapsedTime timer = new ElapsedTime();
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (first) {
-                    robot.limelight.fullCollect(() -> robot.collector.on());
-                    timer.reset();
-                    first = false;
-                }
-
-                if (timer.seconds() <= minTime){
-                    return true;}
-                else if (timer.seconds() > maxTime)
-                { return false;}
-
-                TelemetryPacket packet = new TelemetryPacket();
-                FtcDashboard.getInstance().sendTelemetryPacket(packet);
-                return !robot.spindexer.isStatic();
-            }
-
-
-        };
-    }
 
 
     public static Action moveSpindexer60() {
@@ -231,8 +204,7 @@ public class AutoActions {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (first) {
-                    int ticks = robot.limelight.motifRotation(num);
-                    robot.spindexer.setTargetAdj(ticks);
+                    robot.limelight.motifRotation(num);
                     timer.reset();
                     first = false;
 

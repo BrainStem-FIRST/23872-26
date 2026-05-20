@@ -52,6 +52,7 @@ public class BrainSTEMRobot {
 
 
 
+
     public boolean hit = false;
 
     public boolean isSpindStopped;
@@ -73,6 +74,7 @@ public class BrainSTEMRobot {
 
         this.telemetry = telemetry;
         this.opMode = opMode;
+
 
         park = new Parking(hwMap, telemetry);
 
@@ -96,7 +98,6 @@ public class BrainSTEMRobot {
         subsystems.add(shooter);
         subsystems.add(ramp);
         subsystems.add(pivot);
-
         subsystems.add(park);
 
         drive = new MecanumDrive(hwMap,startPose);

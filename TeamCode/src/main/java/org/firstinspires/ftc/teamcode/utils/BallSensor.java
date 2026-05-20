@@ -17,7 +17,7 @@ public class BallSensor {
 
     public DigitalChannel beamBreak;
     public NormalizedColorSensor colorSensor;
-    public ServoImplEx ledLight; // added for led
+
 
     private boolean lastBeamState = true;
     public ElapsedTime timer = new ElapsedTime();
@@ -36,9 +36,6 @@ public class BallSensor {
     public static double purpleBallMinG = 0, purpleBallMaxG = 0, purpleBallMinB = 0, purpleBallMaxB = 0, purpleBallMinR = 0, purpleBallMaxR = 0;
 
 
-    public static double POS_GREEN = 0.285;  // added (target 1507)
-    public static double POS_PURPLE = 0.555; // added (target 1890)
-    public static double POS_WHITE = 0.703;  // added (target 2100)
 
 
 
@@ -57,10 +54,7 @@ public class BallSensor {
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
         colorSensor.setGain(10);
-
-        ledLight = hardwareMap.get(ServoImplEx.class, "ledLight"); // added for led
-        ledLight.setPwmRange(new PwmControl.PwmRange(1102, 2522)); // added for led
-    }
+  }
 
     public String scanForNewBall() {
         boolean currentBeamState = !beamBreak.getState(); // false = broken, true = not broken
@@ -120,7 +114,7 @@ public class BallSensor {
         double sum = red + green + blue;
 
         if (sum < 0.001) { // added
-            ledLight.setPosition(POS_WHITE); // added
+
             return "EMPTY";
         }
 
@@ -131,16 +125,16 @@ public class BallSensor {
         if (rPercent > greenBallMinR && rPercent < greenBallMaxR &&
                 bPercent > greenBallMinB && bPercent < greenBallMaxB &&
                 gPercent > greenBallMinG && gPercent < greenBallMaxG) {
-            ledLight.setPosition(POS_GREEN); // added for led
+
             return "GREEN";
         } else if (rPercent > purpleBallMinR && rPercent < purpleBallMaxR &&
                 bPercent > purpleBallMinB && bPercent < purpleBallMaxB &&
                 gPercent > purpleBallMinG && gPercent < purpleBallMaxG) {
-            ledLight.setPosition(POS_PURPLE); // added for led
+
             return "PURPLE";
         }
 
-        ledLight.setPosition(POS_WHITE); // added for led
+
         return "PURPLE";
     }
 
